@@ -1,0 +1,266 @@
+/**
+ * Main framework class.<br />
+ * This class extends on <a target="_blank" href="http://backbonejs.org/#Events">Backbone.Events</a>.
+ *
+ * @class CylinderClass
+ */
+
+module.exports = function CylinderClass () {
+
+	var instance = this;
+	var initialized = false;
+
+	/**
+	 * Checks if the framework has been initialized.
+	 * @return {Boolean}
+	 */
+	instance.initialized = function () { return initialized; }
+
+	/**
+	 * Validate if a variable or a dependency exists.
+	 * The framework will check if it exists in the global scope.
+	 *
+	 * @param  {...(String|Object)} dependencies - The names of the dependencies to be checked.
+	 * @param  {Boolean} [silent] - If true, the method will not throw an exception when a mandatory dependency is not found.
+	 * @return {Boolean} Returns true if it exists, and throws an exception if it doesn't (unless the last argument is <code>true</code>).
+	 *
+	 * @example
+	 * // throws an exception because "asdf" is not declared.
+	 * // you can also specify objects for a cleaner exception output.
+	 * Cylinder.dependency(
+	 *     'async',
+	 *     'jQuery',
+	 *     { package: '_', name: 'underscore.js' },
+	 *     { package: 's', name: 'underscore.string', scope: window, optional: true },
+	 *     'Backbone',
+	 *     'asdf'
+	 * );
+	 *
+	 * @example
+	 * // you can check for dependencies inside a variable
+	 * // and the whole family tree will be checked from top-level
+	 * Cylinder.dependency('$.fn.slick', 'Cylinder.router', 'Cylinder.resize');
+	 *
+	 * @example
+	 * // doesn't throw an exception
+	 * // and allows the programmer to gracefully handle missing dependencies
+	 * if (Cylinder.dependency('$.fn.velocity', true)) {
+	 *     // velocity is present
+	 *     $('#element').velocity({ top: 0 });
+	 * }
+	 * else {
+	 *     // velocity.js is not defined
+	 *     // so the programmer can use a fallback
+	 *     $('#element').animate({ top: 0 });
+	 * }
+	 */
+	instance.dependency = function () {
+		var args = arguments; // make a copy of all received arguments!
+		var loud = !_.isBoolean(_.last(args)); // if the last argument is not a boolean, throw exception!
+		if (!loud) args = _.initial(args); // if the last argument IS a boolean, remove it from the arguments!
+
+		for (var i = 0; i < args.length; i++) {
+			var dependency = args[i];
+			var dependency_object = typeof dependency == 'object';
+			var dependency_mandatory = !dependency_object || dependency.optional != true;
+
+			var scope = dependency_object ? (dependency.scope || window) : window;
+			var name = dependency_object ? dependency.name : dependency; // get the dependency name to output later
+			var tree = ('' + (dependency_object ? dependency.package : dependency)).split('.'); // split by dot
+
+			// don't forget that any argument can be recursive,
+			// for example, "_.str", so we have to drill down!
+			for (var j = 0; j < tree.length; j++) { // drill
+				var dependency = tree[j];
+				var exists = Object.prototype.hasOwnProperty.call(scope, dependency);
+				if (!exists) {
+					if (loud && dependency_mandatory) throw new CylinderException('Missing dependency "' + name + '"!');
+					return false; // and just return false for reasons!
+				}
+				scope = scope[dependency]; // the scope exists, go to next dependency
+			}
+
+			// if we reach here, the dependency exists!
+			// go to the next one
+		}
+
+		return true;
+	};
+
+	// CHECK MAIN DEPENDENCIES NOW!
+	// If we don't do this, the framework will just
+	// die in the water. We don't want to die like that.
+	instance.dependency(
+		'async',
+		'jQuery',
+		{ package: '_', name: 'underscore.js' },
+		{ package: 's', name: 'underscore.string' },
+		'Backbone'
+	);
+
+	var extensions = []; // initializable extensions!
+	var modules = {}; // modules!
+
+	/**
+	 * The jQuery instance.
+	 * @type {jQuery}
+	 */
+	instance.$ = jQuery;
+
+	/**
+	 * The underscore.js instance.
+	 * @type {Underscore}
+	 */
+	instance._ = _;
+
+	/**
+	 * The underscore.string instance.
+	 * @type {UnderscoreString}
+	 */
+	instance.s = s;
+
+	/**
+	 * Debug mode.
+	 * @type {Boolean}
+	 */
+	instance.debug = false;
+
+	// We'll mix in the underscore and underscore.string modules,
+	// so that we don't have to mess with external files.
+	// We'll also add event handling to Cylinder.
+	_.extend(_, { str: instance.s }); // add _.str to _
+	_.extend(this, Backbone.Events); // add events
+
+	/**
+	 * Extends the framework's core.<br />
+	 * If <code>extend_on_init</code> is true, then the framework won't be extended until properly initialized.
+	 *
+	 * @param  {Function|Object}      func - The extension's constructor.
+	 * @param  {Boolean}  [extend_on_init] - If true, the framework will only add 'func' after 'init' is called.
+	 * @return {Mixed} Returns the result of 'func' after evaluated.
+	 *
+	 * @example
+	 * Cylinder.extend(function (cl) {
+	 *     var extension = {};
+	 *     extension.abc = 123;
+	 *     extension.dfg = 456;
+	 *     return extension;
+	 * });
+	 *
+	 * console.log(Cylinder.abc); // 123
+	 * console.log(Cylinder.dfg); // 456
+	 */
+	instance.extend = function (func, extend_on_init) {
+		if (!initialized && extend_on_init) {
+			if (!_.contains(extensions, func)) extensions.push(func); // add extension to cache
+			return instance; // return the framework instance!
+		}
+
+		if (typeof func == 'function') func = func(instance); // run the function first...
+		if (arguments.length < 3) instance.trigger('extend', func); // trigger an event for when extended...
+		_.extend(instance, func); // add it to the framework...
+		return func; // and return the object itself!
+	};
+
+	/**
+	 * Extends the framework with a specific named module.<br />
+	 * The module won't be added until the framework is properly initialized.
+	 * When, or if, <code>initialize()</code> is called, then the module will be added as well.
+	 *
+	 * @param  {String}   name - The module's name.
+	 * @param  {Function} func - The module's constructor.
+	 * @return {Mixed} Returns the result of 'func' after evaluated.
+	 *
+	 * @example
+	 * Cylinder.module('mymodule', function (cl, module) {
+	 *     module.alert = function (str) {
+	 *         alert('abc');
+	 *     };
+	 *     return module;
+	 * });
+	 *
+	 * Cylinder.mymodule.alert('hello!');
+	 */
+	instance.module = function (name, func) {
+		// check if we have a name and if it is a string!
+		// if the name is blank, then forget about it and throw error!
+		if (!_.isString(name) || (/^\s*$/).test(name)) throw new CylinderException('Trying to add a nameless module!');
+
+		// check if func is null, cause it's probably just trying to return the module!
+		// if so, check if the module exists, and return it!
+		if (_.isUndefined(func) || _.isNull(func)) {
+			if (initialized && _.has(modules, name)) return instance[name];
+			return null;
+		}
+
+		modules[name] = func; // add module to cache
+		if (!initialized) return instance; // return the framework instance!
+
+		var obj = {}; // the final object to extend with the framework.
+		var module = {}; // the module object itself, might have methods and properties.
+		var result = obj[name] = typeof func == 'function' ? func(instance, module) : _.extend(module, func); // initialize module...
+		instance.extend(obj, true, false); // add it to the framework...
+		instance.trigger('module', name, result); // trigger an event for when extended...
+		return obj; // and return the module itself!
+	};
+
+	/**
+	 * Returns a list of existing modules.
+	 * @return {Array}
+	 */
+	instance.modules = function () {
+		var result = {};
+		_.each(modules, function (func, name) {
+			result[name] = instance[name];
+		});
+		return result;
+	};
+
+	/**
+	 * Properly initializes the framework.<br />
+	 * This method is based on jQuery's <code>$(document).ready()</code> shorthand.
+	 *
+	 * @param  {Function} [callback] - Function to run after initialization.
+	 * @return {CylinderClass} Returns the instance itself.
+	 *
+	 * @example
+	 * // initialize the current instance
+	 * // onto a new, more type-friendly, variable
+	 * var cl = Cylinder.init(function () {
+	 *     console.log('cylinder is initialized!');
+	 *     console.log('modules present:', cl.modules());
+	 * });
+	 */
+	instance.init = function (callback) {
+		if (initialized) return instance; // don't do a thing if this already ran!
+		initialized = true; // tell the framework that we're set up and ready to go!
+
+		instance.$(function () {
+			// runs through each initializable extension
+			// and finally initializes it!
+			_.each(extensions, function (func) {
+				instance.extend(func);
+			});
+
+			// runs through each module
+			// and initializes it again!
+			_.each(modules, function (func, name) {
+				instance.module(name, func);
+			});
+
+			// run callback, if it's a method!
+			if (_.isFunction(callback)) callback(instance);
+
+			// call event so the app can finish stuff!
+			// this will be assyncronous!
+			instance.trigger('init', instance);
+		});
+
+		// return the instance itself because the programmer
+		// will be able to customize the short tag!
+		return instance;
+	};
+
+	return instance; // finish constructing!
+
+};
