@@ -1,7 +1,7 @@
 {
   "name": "cylinder",
   "description": "HTML and Javascript framework for web applications",
-  "main": "dist/cylinder.min.js",
+  "main": "dist/cylinder.js",
   "authors": [
     "Luís Soares <luis.soares@comon.pt>"
   ],
