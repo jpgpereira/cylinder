@@ -65,7 +65,7 @@ module.exports = function (cylinder, _module) {
 		var value_suffix = (value_exists ? ' - ' : '') + module.options.title;
 		if (override && value_exists) value_suffix = ''; // remove suffix if overriden
 		if (!value_exists) value = ''; // so it doesn't show up as "undefinedWebsite"...
-		document.title = cylinder.methods.unescape(value + value_suffix); // change the title!
+		document.title = cylinder.s.unescapeHTML(value + value_suffix); // change the title!
 	};
 
 	/**

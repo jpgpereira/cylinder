@@ -21,16 +21,6 @@ module.exports = function (cylinder, _module) {
 	};
 
 	/**
-	 * Decodes HTML entities into real characters.
-	 *
-	 * @param  {String} str - The string with HTML entities.
-	 * @return {String} The string without HTML entities.
-	 */
-	module.unescape = function (str) {
-		return cylinder.$('<div>').html(str).html();
-	};
-
-	/**
 	 * Unserializes a string into an object.<br /><br />
 	 * This method is based on the implementation by Bruce Kirkpatrick.<br />
 	 * <a target="_blank" href="https://gist.github.com/brucekirkpatrick/7026682#gistcomment-1442581">https://gist.github.com/brucekirkpatrick/7026682#gistcomment-1442581</a>

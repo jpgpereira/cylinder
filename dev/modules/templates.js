@@ -357,7 +357,7 @@ module.exports = function (cylinder, _module) {
 		else {
 			id = '' + (new Date()).getTime() + replace_counter; // generate new ID
 			$el.data('template-id', id); // associate the new ID to the element in question
-			template = $el.html(); // get the full HTML from the element
+			template = cylinder.s.unescapeHTML( $el.html() ); // get the full HTML from the element
 			cache_replaced[id] = template; // store template in cache
 			replace_counter++; // up the counter by 1
 		}

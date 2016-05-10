@@ -1,5 +1,5 @@
 /*
- * cylinder v0.10.2 (2016-05-10 11:55:42)
+ * cylinder v0.10.3 (2016-05-10 14:10:35)
  * @author Luís Soares <luis.soares@comon.pt>
  */
 
@@ -565,7 +565,7 @@ module.exports = function (cylinder, _module) {
 		var value_suffix = (value_exists ? ' - ' : '') + module.options.title;
 		if (override && value_exists) value_suffix = ''; // remove suffix if overriden
 		if (!value_exists) value = ''; // so it doesn't show up as "undefinedWebsite"...
-		document.title = cylinder.methods.unescape(value + value_suffix); // change the title!
+		document.title = cylinder.s.unescapeHTML(value + value_suffix); // change the title!
 	};
 
 	/**
@@ -1854,7 +1854,7 @@ module.exports = function (cylinder, _module) {
 		else {
 			id = '' + (new Date()).getTime() + replace_counter; // generate new ID
 			$el.data('template-id', id); // associate the new ID to the element in question
-			template = $el.html(); // get the full HTML from the element
+			template = cylinder.s.unescapeHTML( $el.html() ); // get the full HTML from the element
 			cache_replaced[id] = template; // store template in cache
 			replace_counter++; // up the counter by 1
 		}
@@ -1907,16 +1907,6 @@ module.exports = function (cylinder, _module) {
 	 */
 	module.text = function (str) {
 		return cylinder.$('<div>').html(str).text();
-	};
-
-	/**
-	 * Decodes HTML entities into real characters.
-	 *
-	 * @param  {String} str - The string with HTML entities.
-	 * @return {String} The string without HTML entities.
-	 */
-	module.unescape = function (str) {
-		return cylinder.$('<div>').html(str).html();
 	};
 
 	/**

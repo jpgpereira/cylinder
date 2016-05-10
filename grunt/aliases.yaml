@@ -7,6 +7,7 @@ build:
 - copy:vendor # copy the JS vendors dir
 - browserify:dist # convert JS into CYLINDER file
 - uglify:dist # minify our CYLINDER file
+- uglify:pkgd # ALTERNATIVE - compile everything into one file
 
 docs:
 - clean:docs # clear the documentation folder
