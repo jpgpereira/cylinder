@@ -2,6 +2,11 @@ module.exports = {
 
 	root: './',
 
+	// build-related folders
+	bower: './bower_components',
+	grunt: './grunt',
+	node: './node_modules',
+
 	// development folders
 	dev: './dev',
 	dev_core: '<%= project.dev %>/core',
