@@ -1,5 +1,5 @@
 /*
- * cylinder v0.10.3 (2016-05-10 14:10:35)
+ * cylinder v0.11.0 (2016-05-11 18:17:28)
  * @author Luís Soares <luis.soares@comon.pt>
  */
 
@@ -1624,45 +1624,60 @@ module.exports = function (cylinder, _module) {
 	};
 
 	/**
-	 * Attempts to load one or more remote template file.
+	 * Attempts to load a remote template.<br />
+	 * The method will call <code>Promise.fail(err)</code> if one of the requested templates fails to load, independently if others succeeded.<br /><br />
+	 * Notice: this method should be considered and used as an asynchronous method.
 	 *
-	 * @param {String|String[]} id         - The unique identifier(s) of the template(s) to load.
-	 * @param {Function}        [callback] - Function executed after loading finishes (either it succeeds or fails).
+	 * @param  {...String} ids - The unique identifier(s) of the template(s) to load.
+	 * @return {Promise}   Returns a Promise object.
 	 */
-	module.load = function (id, callback) {
-		if (_.isArray(id)) {
-			// "id" is an array, which means we want to load multiple templates!
-			// so we'll do an async operation with the same callback in the end!
-			async.each(id, function (id, done) { module.load(id, done); }, callback);
-			return;
+	module.load = function () {
+		var deferred = $.Deferred();
+
+		// fetch the provided strings
+		var ids = _.chain(arguments)
+			.flatten()
+			.filter(function (id) { return _.isString(id) && !cylinder.s.isBlank(id); })
+			.value();
+
+		// if we have more than one ID,
+		// we'll re-run this method for each ID provided
+		if (ids.length > 1) {
+			async.each(ids, function (id, done) {
+				module.load(id)
+					.done(function (template) { done(null, template); })
+					.fail(function (err) { done(err); });
+			}, function (err, results) {
+				if (err) deferred.reject(err);
+				else deferred.resolve();
+			});
+			return deferred;
 		}
 
-		// "id" wasn't an array
-		// so we'll just process an individual template!
-		if (!_.isString(id) || cylinder.s.isBlank(id)) throw new CylinderException('Trying to load a template but no ID was provided.');
-		if (!_.isFunction(callback)) callback = false; // don't even bother if the callback is not a method
+		// get the ID of the single template to fetch
+		var id = _.first(ids);
 
+		// if the template had an error before,
+		// we will error out now!
 		if (_.has(load_errored, id)) {
-			// template couldn't be loaded before,
-			// so we will just error out now!
-			if (callback) callback(load_errored[id], null);
-			return;
+			deferred.reject(load_errored[id]);
+			return deferred;
 		}
 
+		// if the template is already loading,
+		// just add the callback to the job.
 		if (_.has(load_jobs, id)) {
-			// template is already loading,
-			// so add the callback to it!
-			if (callback) load_jobs[id].callbacks.push(callback);
-			return;
+			load_jobs[id].promises.push(deferred);
+			return deferred;
 		}
 
 		// since we now know that it's not in loading or errored,
-		// attempt to fetch it from the dom.
-		// if it fails, load it.
+		// attempt to fetch it from the dom,
+		// and if that fails, load it with ajax!
 		var template = module.get(id);
 		if (!_.isEmpty(template)) {
-			if (callback) callback(null, template);
-			return;
+			deferred.resolve(template);
+			return deferred;
 		}
 
 		// attempt to fetch the base path for templates.
@@ -1676,16 +1691,17 @@ module.exports = function (cylinder, _module) {
 		// adds the file extension if it doesn't exist at the last node!
 		var path_file = id;
 		var path_file_parts = path_file.split('/');
-		if (!cylinder.s.include(_.last(path_file_parts), module.options.load_extension)) {
+		var path_file_name = _.last(path_file_parts);
+		if (!cylinder.s.include(path_file_name, module.options.load_extension)) {
 			path_file += module.options.load_extension;
 		}
 
 		var job = {
 			id: id, // job id
 			path: path_base + path_file, // path for file
-			date: new Date(),
-			request: null,
-			callbacks: (callback ? [callback] : [])
+			date: new Date(), // current job date
+			request: null, // current request
+			promises: [ deferred ] // deferred object so we can plug into it
 		};
 
 		job.request = $.ajax({
@@ -1694,24 +1710,24 @@ module.exports = function (cylinder, _module) {
 			method: 'get',
 			dataType: 'html',
 			error: function (jxhr, text, thrown) {
-				var error = { jxhr: jxhr, text: text, thrown: thrown, status: jxhr.status };
 				delete load_jobs[id]; // remove the job from the hashmap...
-				load_errored[id] = error; // add an error to the collection...
-				_.each(job.callbacks, function (callback) { callback(error, null); }); // callback each job
+				var err = { jxhr: jxhr, text: text, thrown: thrown, status: jxhr.status }; // create an error variable...
+				load_errored[id] = err; // add the error to the collection...
+				_.each(job.promises, function (promise) { promise.reject(err); }); // reject each job promise
 			},
 			success: function (data) {
 				delete load_jobs[id]; // remove the job from the hashmap...
 				template = module.add(id, data); // add the template to our collection...
-				_.each(job.callbacks, function (callback) { callback(null, template); }); // callback each job
+				_.each(job.promises, function (promise) { promise.resolve(template); }); // callback each job
 			}
 		});
 
 		load_jobs[id] = job; // add it to the running jobs
-		return; // and return false because we don't have this template... yet!
+		return deferred; // and return false because we don't have this template... yet!
 	};
 
 	/**
-	 * Render a template.
+	 * Renders a template.
 	 *
 	 * @param  {String} id         - The unique identifier of the template to render.
 	 * @param  {Object} [options]  - The object of options for the template to use.
@@ -1795,12 +1811,16 @@ module.exports = function (cylinder, _module) {
 		if (module.options.load) {
 			// asynchronous loading is enabled,
 			// so we'll do the asynchronous rendering stuff!
-			module.load(id, function (err, template) {
-				if (err) return deferred.reject(err); // error occurred while loading the template...
-				$el.html(module.render(id, options, partials)); // rendering the template if no error...
-				deferred.resolve($el, id, options, partials); // call the final callback...
-				ev(); // and call events, just to finish!
-			});
+			module
+				.load(id)
+				.fail(function (err) {
+					deferred.reject(err); // error occurred while loading the template...
+				})
+				.done(function () {
+					$el.html(module.render(id, options, partials)); // rendering the template if no error...
+					deferred.resolve($el, id, options, partials); // call the final callback...
+					ev(); // and call events, just to finish!
+				});
 		}
 		else {
 			// "load" is not active, just return and do render!

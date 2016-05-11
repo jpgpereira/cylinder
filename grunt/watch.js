@@ -8,7 +8,7 @@ module.exports = {
 
 	js_cylinder: {
 		files: [ '<%= project.dev_core %>/**', '<%= project.dev_extensions %>/**', '<%= project.dev_modules %>/**' ],
-		tasks: [ 'browserify:dist', 'uglify:dist', 'clean:docs', 'jsdoc:docs' ],
+		tasks: [ 'browserify:dist', 'uglify:dist', 'uglify:pkgd'/*, 'clean:docs', 'jsdoc:docs'*/ ],
 		options: { spawn: false }
 	}
 
