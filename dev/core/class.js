@@ -209,11 +209,9 @@ module.exports = function CylinderClass () {
 	 * @return {Array}
 	 */
 	instance.modules = function () {
-		var result = {};
-		_.each(modules, function (func, name) {
-			result[name] = instance[name];
+		return _.mapObject(modules, function (func, name) {
+			return instance[name];
 		});
-		return result;
 	};
 
 	/**

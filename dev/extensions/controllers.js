@@ -68,11 +68,9 @@ module.exports = function (instance) {
 	 * @return {Array}
 	 */
 	instance.controllers = function () {
-		var result = {};
-		_.each(controllers, function (ctrl, name) {
-			result[name] = ctrl.instance;
+		return _.mapObject(controllers, function (ctrl, name) {
+			return ctrl.instance;
 		});
-		return result;
 	};
 
 	/**
