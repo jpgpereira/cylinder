@@ -1,13 +1,9 @@
-/**
- * Utilities module for CylinderClass.
- * @module Cylinder/utils
- * @param {CylinderClass} cylinder - The running Cylinder instance.
- * @param {Object} module - A premade module.
- */
-
 module.exports = function (cylinder, _module) {
 
-	/** @exports Cylinder/utils */
+	/**
+	 * Utilities module for CylinderClass.
+	 * @exports utils
+	 */
 	var module = _.extend({}, _module);
 
 	/**

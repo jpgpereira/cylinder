@@ -1,19 +1,17 @@
 /*
- * cylinder v0.11.0 (2016-05-12 16:43:16)
+ * cylinder v0.11.0 (2016-05-12 23:12:40)
  * @author Luís Soares <luis.soares@comon.pt>
  */
 
 
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-/**
- * Main framework class.<br />
- * This class extends on <a target="_blank" href="http://backbonejs.org/#Events">Backbone.Events</a>.
- *
- * @class CylinderClass
- */
-
 module.exports = function CylinderClass () {
 
+	/**
+	 * Main framework class.<br />
+	 * This class extends on <a target="_blank" href="http://backbonejs.org/#Events">Backbone.Events</a>.
+	 * @exports Cylinder
+	 */
 	var instance = this;
 	var initialized = false;
 
@@ -271,16 +269,14 @@ module.exports = function CylinderClass () {
 };
 
 },{}],2:[function(require,module,exports){
-/**
- * Creates a new CylinderException object.
- *
- * @class CylinderException
- * @param {String} message - The message for this exception.
- * @param {Mixed}  [value] - A value for this exception.
- */
-
 module.exports = function CylinderException (message, value) {
 
+	/**
+	 * Creates a new CylinderException object.
+	 * @exports CylinderException
+	 * @param {String} message - The message for this exception.
+	 * @param {Mixed}  [value] - A value for this exception.
+	 */
 	var exception = this;
 
 	/**
@@ -310,10 +306,6 @@ module.exports = function CylinderException (message, value) {
 };
 
 },{}],3:[function(require,module,exports){
-/**
- * @augments CylinderClass
- */
-
 module.exports = function (instance) {
 
 	var initialized = false;
@@ -453,24 +445,19 @@ module.exports = function (instance) {
 })(window);
 
 },{"./core/class":1,"./core/exception":2,"./extensions/controllers":3,"./modules/analytics":5,"./modules/dom":6,"./modules/resize":7,"./modules/router":8,"./modules/scroll":9,"./modules/store":10,"./modules/templates":11,"./modules/utils":12}],5:[function(require,module,exports){
-/**
- * Analytics module for CylinderClass.
- *
- * @module Cylinder/analytics
- * @param {CylinderClass} cylinder - The running Cylinder instance.
- * @param {Object} module - A premade module.
- */
-
 module.exports = function (cylinder, _module) {
 
-	/** @exports Cylinder/analytics */
+	/**
+	 * Analytics module for CylinderClass.
+	 * @exports analytics
+	 */
 	var module = _.extend({}, _module);
 
 	/**
 	 * The options taken by the module.
 	 * @type     {Object}
-	 * @property {Boolean} options.debug - If true, requests won't be sent.
-	 * @property {Boolean}   options.log - Should the module log into the console?
+	 * @property {Boolean} debug - If true, requests won't be sent.
+	 * @property {Boolean} log   - Should the module log into the console?
 	 */
 	module.options = {
 		debug: false,
@@ -514,9 +501,9 @@ module.exports = function (cylinder, _module) {
 	/**
 	 * Send an Analytics event to both <code>ga.js</code> and <code>analytics.js</code>.
 	 * @param {String|Number} category - The event's category.
-	 * @param {String|Number}   action - The event's action.
-	 * @param {String|Number}  [label] - The event's label for that action.
-	 * @param {String|Number}  [value] - The event's value for that action.
+	 * @param {String|Number} action   - The event's action.
+	 * @param {String|Number} [label]  - The event's label for that action.
+	 * @param {String|Number} [value]  - The event's value for that action.
 	 */
 	module.event = function (category, action, label, value) {
 		if (module.options.log && !_.isUndefined(console.log))
@@ -532,17 +519,12 @@ module.exports = function (cylinder, _module) {
 };
 
 },{}],6:[function(require,module,exports){
-/**
- * DOM management module for CylinderClass.
- *
- * @module Cylinder/dom
- * @param {CylinderClass} cylinder - The running Cylinder instance.
- * @param {Object} module - A premade module.
- */
-
 module.exports = function (cylinder, _module) {
 
-	/** @exports Cylinder/dom */
+	/**
+	 * DOM management module for CylinderClass.
+	 * @exports dom
+	 */
 	var module = _.extend({}, _module);
 
 	// ALL DEPENDENCIES FIRST!
@@ -553,7 +535,7 @@ module.exports = function (cylinder, _module) {
 	/**
 	 * The options taken by the module.
 	 * @type     {Object}
-	 * @property {String} options.title - The app's default title.
+	 * @property {String} title - The app's default title.
 	 */
 	module.options = {
 		title: 'Cylinder'
@@ -633,17 +615,12 @@ module.exports = function (cylinder, _module) {
 /*! viewportSize | Author: Tyson Matanich, 2013 | License: MIT */
 (function(n){n.viewportSize={},n.viewportSize.getHeight=function(){return t("Height")},n.viewportSize.getWidth=function(){return t("Width")};var t=function(t){var f,o=t.toLowerCase(),e=n.document,i=e.documentElement,r,u;return n["inner"+t]===undefined?f=i["client"+t]:n["inner"+t]!=i["client"+t]?(r=e.createElement("body"),r.id="vpw-test-b",r.style.cssText="overflow:scroll",u=e.createElement("div"),u.id="vpw-test-d",u.style.cssText="position:absolute;top:-1000px",u.innerHTML="<style>@media("+o+":"+i["client"+t]+"px){body#vpw-test-b div#vpw-test-d{"+o+":7px!important}}<\/style>",r.appendChild(u),i.insertBefore(r,e.head),f=u["offset"+t]==7?i["client"+t]:n["inner"+t],i.removeChild(r)):f=n["inner"+t],f}})(window);
 
-/**
- * Resize module for CylinderClass.
- *
- * @module Cylinder/resize
- * @param {CylinderClass} cylinder - The running Cylinder instance.
- * @param {Object} module - A premade module.
- */
-
 module.exports = function (cylinder, _module) {
 
-	/** @exports Cylinder/resize */
+	/**
+	 * Resize module for CylinderClass.
+	 * @exports resize
+	 */
 	var module = _.extend({}, _module);
 
 	// ALL DEPENDENCIES FIRST!
@@ -816,29 +793,24 @@ module.exports = function (cylinder, _module) {
 };
 
 },{}],8:[function(require,module,exports){
-/**
- * Router module for CylinderClass.
- *
- * @module Cylinder/router
- * @param {CylinderClass} cylinder - The running Cylinder instance.
- * @param {Object} module - A premade module.
- */
-
 module.exports = function (cylinder, _module) {
 
-	/** @exports Cylinder/router */
+	/**
+	 * Router module for CylinderClass.
+	 * @exports router
+	 */
 	var module = _.extend({}, _module);
 
 	/**
 	 * The options taken by the module.
 	 * @type     {Object}
-	 * @property {Boolean} options.push     - If true, the module will attempt to use HTML5's pushState.<br />
-	 *                                        See <a href="http://backbonejs.org/#History" target="_blank">http://backbonejs.org/#History</a>
-	 *                                        for more details about how pushState works.
-	 * @property {Boolean} options.clicks   - If false, clicking on a link covered by <code>addHandler()</code> will bypass the module's default behaviour.
-	 * @property {Boolean} options.prefix   - Sets up a prefix for all links.
-	 * @property {Boolean} options.selector - The default element selector for the click handler given by <code>addHandler()</code>.
-	 * @property {Boolean} options.navigate_defaults - Allows for default properties to be passed to the module's internal Backbone.Router on <code>go()</code>.
+	 * @property {Boolean} push     - If true, the module will attempt to use HTML5's pushState.<br />
+	 *                                See <a href="http://backbonejs.org/#History" target="_blank">http://backbonejs.org/#History</a>
+	 *                                for more details about how pushState works.
+	 * @property {Boolean} clicks   - If false, clicking on a link covered by <code>addHandler()</code> will bypass the module's default behaviour.
+	 * @property {Boolean} prefix   - Sets up a prefix for all links.
+	 * @property {Boolean} selector - The default element selector for the click handler given by <code>addHandler()</code>.
+	 * @property {Boolean} navigate_defaults - Allows for default properties to be passed to the module's internal Backbone.Router on <code>go()</code>.
 	 */
 	module.options = {
 		push: false, // is pushState navigation on?
@@ -1203,15 +1175,6 @@ module.exports = function (cylinder, _module) {
 };
 
 },{}],9:[function(require,module,exports){
-/**
- * Scroll module for CylinderClass.<br />
- * This module extends on <a target="_blank" href="http://backbonejs.org/#Events">Backbone.Events</a>.
- *
- * @module Cylinder/scroll
- * @param {CylinderClass} cylinder - The running Cylinder instance.
- * @param {Object} module - A premade module.
- */
-
 module.exports = function (cylinder, _module) {
 
 	// ALL DEPENDENCIES FIRST!
@@ -1223,7 +1186,11 @@ module.exports = function (cylinder, _module) {
 	// This will build an object based on an element.
 	// It will add handlers and stuff automagically.
 	var initialize = function ($element, n) {
-		/** @exports Cylinder/scroll */
+		/**
+		 * Scroll module for CylinderClass.<br />
+		 * This module extends on <a target="_blank" href="http://backbonejs.org/#Events">Backbone.Events</a>.
+		 * @exports scroll
+		 */
 		var obj = _.extend({}, Backbone.Events);
 
 		/**
@@ -1420,16 +1387,12 @@ module.exports = function (cylinder, _module) {
 };
 
 },{}],10:[function(require,module,exports){
-/**
- * Store module for CylinderClass.
- * @module Cylinder/store
- * @param {CylinderClass} cylinder - The running Cylinder instance.
- * @param {Object} module - A premade module.
- */
-
 module.exports = function (cylinder, _module) {
 
-	/** @exports Cylinder/store */
+	/**
+	 * Store module for CylinderClass.
+	 * @exports store
+	 */
 	var module = _.extend({}, _module);
 
 	// registered models list
@@ -1441,8 +1404,7 @@ module.exports = function (cylinder, _module) {
 	/**
 	 * Default model that can and should be used to create new data models.<br />
 	 * The model is based on the standard <a href="http://backbonejs.org/#Model" target="_blank">Backbone.Model</a>, and uses the same methods.
-	 * You are free to override what this module considers as the main data model methods: <code>fetch()</code>,
-	 * <code>save()</code>, and <code>destroy()</code>.
+	 * You are free to override what this module considers as the main data model methods: <code>fetch()</code>, <code>save()</code>, and <code>destroy()</code>.
 	 *
 	 * @type     {Model}
 	 * @property {Function} Model.fetch   - Loads properties onto the model. The module does not call this method automatically.
@@ -1706,16 +1668,12 @@ module.exports = function (cylinder, _module) {
 };
 
 },{}],11:[function(require,module,exports){
-/**
- * Templates module for CylinderClass.
- * @module Cylinder/templates
- * @param {CylinderClass} cylinder - The running Cylinder instance.
- * @param {Object} module - A premade module.
- */
-
 module.exports = function (cylinder, _module) {
 
-	/** @exports Cylinder/templates */
+	/**
+	 * Templates module for CylinderClass.
+	 * @exports templates
+	 */
 	var module = _.extend({}, _module);
 
 	// ALL DEPENDENCIES FIRST!
@@ -1735,13 +1693,13 @@ module.exports = function (cylinder, _module) {
 	/**
 	 * The options taken by the module.
 	 * @type     {Object}
-	 * @property {Boolean}        options.load           - If true, the module will try to load templates automatically.
-	 * @property {Boolean}        options.load_cache     - If true, the browser will cache any remotely-fetched templates.
-	 * @property {Boolean}        options.load_base_path - Remote template base path.
-	 * @property {Boolean}        options.load_extension - Remote template file extension.
-	 * @property {Boolean}        options.fire_events    - Fires all events when rendering or doing other things.
-	 * @property {Boolean}        options.partials       - All templates will always be available as partials.
-	 * @property {String|Boolean} options.premades       - If not false, the module will look for a specific object variable for templates (default: JST).
+	 * @property {Boolean}        load           - If true, the module will try to load templates automatically.
+	 * @property {Boolean}        load_cache     - If true, the browser will cache any remotely-fetched templates.
+	 * @property {Boolean}        load_base_path - Remote template base path.
+	 * @property {Boolean}        load_extension - Remote template file extension.
+	 * @property {Boolean}        fire_events    - Fires all events when rendering or doing other things.
+	 * @property {Boolean}        partials       - All templates will always be available as partials.
+	 * @property {String|Boolean} premades       - If not false, the module will look for a specific object variable for templates (default: JST).
 	 */
 	module.options = {
 		load: false,
@@ -2116,16 +2074,12 @@ module.exports = function (cylinder, _module) {
 };
 
 },{}],12:[function(require,module,exports){
-/**
- * Utilities module for CylinderClass.
- * @module Cylinder/utils
- * @param {CylinderClass} cylinder - The running Cylinder instance.
- * @param {Object} module - A premade module.
- */
-
 module.exports = function (cylinder, _module) {
 
-	/** @exports Cylinder/utils */
+	/**
+	 * Utilities module for CylinderClass.
+	 * @exports utils
+	 */
 	var module = _.extend({}, _module);
 
 	/**

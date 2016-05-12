@@ -1,12 +1,3 @@
-/**
- * Scroll module for CylinderClass.<br />
- * This module extends on <a target="_blank" href="http://backbonejs.org/#Events">Backbone.Events</a>.
- *
- * @module Cylinder/scroll
- * @param {CylinderClass} cylinder - The running Cylinder instance.
- * @param {Object} module - A premade module.
- */
-
 module.exports = function (cylinder, _module) {
 
 	// ALL DEPENDENCIES FIRST!
@@ -18,7 +9,11 @@ module.exports = function (cylinder, _module) {
 	// This will build an object based on an element.
 	// It will add handlers and stuff automagically.
 	var initialize = function ($element, n) {
-		/** @exports Cylinder/scroll */
+		/**
+		 * Scroll module for CylinderClass.<br />
+		 * This module extends on <a target="_blank" href="http://backbonejs.org/#Events">Backbone.Events</a>.
+		 * @exports scroll
+		 */
 		var obj = _.extend({}, Backbone.Events);
 
 		/**

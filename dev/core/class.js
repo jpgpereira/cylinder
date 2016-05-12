@@ -1,12 +1,10 @@
-/**
- * Main framework class.<br />
- * This class extends on <a target="_blank" href="http://backbonejs.org/#Events">Backbone.Events</a>.
- *
- * @class CylinderClass
- */
-
 module.exports = function CylinderClass () {
 
+	/**
+	 * Main framework class.<br />
+	 * This class extends on <a target="_blank" href="http://backbonejs.org/#Events">Backbone.Events</a>.
+	 * @exports Cylinder
+	 */
 	var instance = this;
 	var initialized = false;
 

@@ -1,7 +1,3 @@
-/**
- * @augments CylinderClass
- */
-
 module.exports = function (instance) {
 
 	var initialized = false;

@@ -1,13 +1,11 @@
-/**
- * Creates a new CylinderException object.
- *
- * @class CylinderException
- * @param {String} message - The message for this exception.
- * @param {Mixed}  [value] - A value for this exception.
- */
-
 module.exports = function CylinderException (message, value) {
 
+	/**
+	 * Creates a new CylinderException object.
+	 * @exports CylinderException
+	 * @param {String} message - The message for this exception.
+	 * @param {Mixed}  [value] - A value for this exception.
+	 */
 	var exception = this;
 
 	/**

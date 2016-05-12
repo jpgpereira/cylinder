@@ -16,7 +16,8 @@ module.exports = {
 		],
 		options: {
 			destination: '<%= project.docs %>',
-			template: 'node_modules/docdash'
+			configure: 'jsdoc.json'
+			// template: 'node_modules/docdash'
 		}
 	}
 

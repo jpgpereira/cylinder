@@ -1,26 +1,21 @@
-/**
- * Router module for CylinderClass.
- *
- * @module Cylinder/router
- * @param {CylinderClass} cylinder - The running Cylinder instance.
- * @param {Object} module - A premade module.
- */
-
 module.exports = function (cylinder, _module) {
 
-	/** @exports Cylinder/router */
+	/**
+	 * Router module for CylinderClass.
+	 * @exports router
+	 */
 	var module = _.extend({}, _module);
 
 	/**
 	 * The options taken by the module.
 	 * @type     {Object}
-	 * @property {Boolean} options.push     - If true, the module will attempt to use HTML5's pushState.<br />
-	 *                                        See <a href="http://backbonejs.org/#History" target="_blank">http://backbonejs.org/#History</a>
-	 *                                        for more details about how pushState works.
-	 * @property {Boolean} options.clicks   - If false, clicking on a link covered by <code>addHandler()</code> will bypass the module's default behaviour.
-	 * @property {Boolean} options.prefix   - Sets up a prefix for all links.
-	 * @property {Boolean} options.selector - The default element selector for the click handler given by <code>addHandler()</code>.
-	 * @property {Boolean} options.navigate_defaults - Allows for default properties to be passed to the module's internal Backbone.Router on <code>go()</code>.
+	 * @property {Boolean} push     - If true, the module will attempt to use HTML5's pushState.<br />
+	 *                                See <a href="http://backbonejs.org/#History" target="_blank">http://backbonejs.org/#History</a>
+	 *                                for more details about how pushState works.
+	 * @property {Boolean} clicks   - If false, clicking on a link covered by <code>addHandler()</code> will bypass the module's default behaviour.
+	 * @property {Boolean} prefix   - Sets up a prefix for all links.
+	 * @property {Boolean} selector - The default element selector for the click handler given by <code>addHandler()</code>.
+	 * @property {Boolean} navigate_defaults - Allows for default properties to be passed to the module's internal Backbone.Router on <code>go()</code>.
 	 */
 	module.options = {
 		push: false, // is pushState navigation on?
