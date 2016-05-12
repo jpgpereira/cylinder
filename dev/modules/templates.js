@@ -133,7 +133,7 @@ module.exports = function (cylinder, _module) {
 	 * @return {Promise} Returns a Promise object.
 	 */
 	module.load = function () {
-		var deferred = $.Deferred();
+		var deferred = cylinder.$.Deferred();
 
 		// fetch the provided strings
 		var ids = _.chain(arguments)
@@ -284,7 +284,7 @@ module.exports = function (cylinder, _module) {
 	 * @return {Promise} Returns a Promise object.
 	 */
 	module.apply = function ($el, id, options, partials) {
-		var deferred = $.Deferred();
+		var deferred = cylinder.$.Deferred();
 
 		// many times we'd apply stuff to an element that would not yet exist.
 		// this time, we'll warn the developer that such element should not be null!
@@ -347,7 +347,7 @@ module.exports = function (cylinder, _module) {
 	 * @return {Promise} Returns a Promise object.
 	 */
 	module.replace = function ($el, options, partials) {
-		var deferred = $.Deferred();
+		var deferred = cylinder.$.Deferred();
 
 		// many times we'd apply stuff to an element that would not yet exist.
 		// this time, we'll warn the developer that such element should not be null!
