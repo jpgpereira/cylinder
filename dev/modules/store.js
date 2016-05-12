@@ -277,7 +277,7 @@ module.exports = function (cylinder, _module) {
 	});
 
 	// now switch context to localstorage
-	// module.switch('localstorage');
+	module.switch('localstorage');
 
 	return module; // finish
 

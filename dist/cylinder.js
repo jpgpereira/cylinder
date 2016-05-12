@@ -1,5 +1,5 @@
 /*
- * cylinder v0.11.0 (2016-05-12 15:28:17)
+ * cylinder v0.11.0 (2016-05-12 16:43:16)
  * @author Luís Soares <luis.soares@comon.pt>
  */
 
@@ -1699,7 +1699,7 @@ module.exports = function (cylinder, _module) {
 	});
 
 	// now switch context to localstorage
-	// module.switch('localstorage');
+	module.switch('localstorage');
 
 	return module; // finish
 
