@@ -198,7 +198,7 @@ module.exports = function (cylinder, _module) {
 	 * @return {Model} Returns the model itself after switching.
 	 *
 	 * @example
-	 * Cylinder.store.switch('localstorage');
+	 * Cylinder.store.switch('localstorage'); // switches the "Cylinder.store" context
 	 * Cylinder.store.set('abc', 123); // sets 'abc' on localStorage
 	 * Cylinder.store.get('abc'); // => 123
 	 */
