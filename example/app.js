@@ -3,7 +3,7 @@ var cl = Cylinder.init(function () {
 	var $container = cl.$('.container');
 
 	// store config
-	cl.store.load();
+	cl.store.fetch();
 
 	// templates config
 	cl.templates.options.load = true;
