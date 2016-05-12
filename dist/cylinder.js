@@ -1,5 +1,5 @@
 /*
- * cylinder v0.11.0 (2016-05-11 18:17:28)
+ * cylinder v0.11.0 (2016-05-12 15:26:34)
  * @author Luís Soares <luis.soares@comon.pt>
  */
 
@@ -28,7 +28,7 @@ module.exports = function CylinderClass () {
 	 * The framework will check if it exists in the global scope.
 	 *
 	 * @param  {...(String|Object)} dependencies - The names of the dependencies to be checked.
-	 * @param  {Boolean} [silent] - If true, the method will not throw an exception when a mandatory dependency is not found.
+	 * @param  {Boolean}            [silent]     - If true, the method will not throw an exception when a mandatory dependency is not found.
 	 * @return {Boolean} Returns true if it exists, and throws an exception if it doesn't (unless the last argument is <code>true</code>).
 	 *
 	 * @example
@@ -140,10 +140,10 @@ module.exports = function CylinderClass () {
 
 	/**
 	 * Extends the framework's core.<br />
-	 * If <code>extend_on_init</code> is true, then the framework won't be extended until properly initialized.
+	 * If <code>extendOnInit</code> is true, then the framework won't be extended until properly initialized.
 	 *
-	 * @param  {Function|Object}      func - The extension's constructor.
-	 * @param  {Boolean}  [extend_on_init] - If true, the framework will only add 'func' after 'init' is called.
+	 * @param  {Function|Object} func           - The extension's constructor.
+	 * @param  {Boolean}         [extendOnInit] - If true, the framework will only add 'func' after 'init' is called.
 	 * @return {Mixed} Returns the result of 'func' after evaluated.
 	 *
 	 * @example
@@ -157,8 +157,8 @@ module.exports = function CylinderClass () {
 	 * console.log(Cylinder.abc); // 123
 	 * console.log(Cylinder.dfg); // 456
 	 */
-	instance.extend = function (func, extend_on_init) {
-		if (!initialized && extend_on_init) {
+	instance.extend = function (func, extendOnInit) {
+		if (!initialized && extendOnInit) {
 			if (!_.contains(extensions, func)) extensions.push(func); // add extension to cache
 			return instance; // return the framework instance!
 		}
@@ -216,11 +216,9 @@ module.exports = function CylinderClass () {
 	 * @return {Array}
 	 */
 	instance.modules = function () {
-		var result = {};
-		_.each(modules, function (func, name) {
-			result[name] = instance[name];
+		return _.mapObject(modules, function (func, name) {
+			return instance[name];
 		});
-		return result;
 	};
 
 	/**
@@ -321,9 +319,40 @@ module.exports = function (instance) {
 	var initialized = false;
 	var controllers = {}; // controllers!
 
-	// this method allows for controllers to be indexed to the framework!
-	// the controller will be added to a cache until the framework is initialized.
-	// when or if it is initialized, then the module will be initialized as well.
+	/**
+	 * Extends the framework with a specific named controller.<br />
+	 * The controller's constructor won't be initialized until <code>initControllers()</code> is called.
+	 * When, or if, <code>initControllers()</code> is called, then the module will be added as well.<br /><br />
+	 * The controller itself will be added to the internal controller list
+	 * (accessible through <code>controllers()</code>), but it will not be added to the global scope.
+	 *
+	 * @param  {String}   name - The controller's name.
+	 * @param  {Function} func - The controller's constructor.
+	 * @return {Mixed} Returns the result of 'func' after evaluated.
+	 *
+	 * @example
+	 * Cylinder.controller('myctrl', function (cl, controller) {
+	 *     // you can add the controller to the global scope, if you want.
+	 *     // this way, you'll be able to access it easily.
+	 *     window.MyCtrl = controller;
+	 *
+	 *     // controller logic goes here!
+	 *     controller.alert = function (str) {
+	 *         alert('abc');
+	 *     };
+	 *
+	 *     // always return the parent variable itself in the end,
+	 *     // because this is what Cylinder will recognize as the controller to add.
+	 *     return controller;
+	 * });
+	 *
+	 * // you now have two ways to access controllers,
+	 * // either from Cylinder's own method...
+	 * Cylinder.controllers().myctrl.alert('hello!');
+	 *
+	 * // or through the global scope, like we added up.
+	 * MyCtrl.alert('hello, world!');
+	 */
 	instance.controller = function (name, ctor) {
 		// check if we have a name and if it is a string!
 		// if the name is blank, then forget about it and throw error!
@@ -346,18 +375,23 @@ module.exports = function (instance) {
 		return controllers[name].instance; // and return the module itself!
 	};
 
-	// this method just allows us to have a list of indexed controllers!
-	// it'll fetch the controller cache and then add the real object to it!
+	/**
+	 * Returns a list of existing controllers.
+	 * @return {Array}
+	 */
 	instance.controllers = function () {
-		var result = {};
-		_.each(controllers, function (ctrl, name) {
-			result[name] = ctrl.instance;
+		return _.mapObject(controllers, function (ctrl, name) {
+			return ctrl.instance;
 		});
-		return result;
 	};
 
-	// this method initializes all controllers!
-	// it runs through all modules and initializes everything!
+	/**
+	 * Properly initializes Cylinder's controllers.<br />
+	 * This method is based on jQuery's <code>$(document).ready()</code> shorthand.
+	 *
+	 * @param  {Function} [callback] - Function to run after initialization.
+	 * @return {CylinderClass} Returns the instance itself.
+	 */
 	instance.initControllers = function (callback) {
 		if (initialized) return instance; // don't do a thing if this already ran!
 		initialized = true; // tell the framework that we're set up and ready to go!
@@ -1398,97 +1432,274 @@ module.exports = function (cylinder, _module) {
 	/** @exports Cylinder/store */
 	var module = _.extend({}, _module);
 
-	var collection = {}; // this will save everything temporarily!
+	// registered models list
+	// and current store context
+	var models = {};
+	var context = null;
+	var contextname = null;
 
-	var method_load_callback = null; // the previous load callback. it will be used by the methods' load functions.
-	var method_default = 'localstorage'; // the default method to load the collection from.
+	/**
+	 * Default model that can and should be used to create new data models.<br />
+	 * The model is based on the standard <a href="http://backbonejs.org/#Model" target="_blank">Backbone.Model</a>, and uses the same methods.
+	 * You are free to override what this module considers as the main data model methods: <code>fetch()</code>,
+	 * <code>save()</code>, and <code>destroy()</code>.
+	 *
+	 * @type     {Model}
+	 * @property {Function} Model.fetch   - Loads properties onto the model. The module does not call this method automatically.
+	 * @property {Function} Model.save    - Saves properties from the model using your method of choice.
+	 * @property {Function} Model.destroy - Should be used to completely destroy a model. Use at your discretion.
+	 *
+	 * @example
+	 * // the following example creates a new model that will
+	 * // take advantage of the browser's local storage.
+	 * // Notice: Cylinder.store comes with a localstorage model by default!
+	 * var LocalStorageModel = Cylinder.store.Model.extend({
+	 *     namespace: 'abc',
+	 *     fetch: function () {
+	 *         // load the object in localStorage to the model
+	 *         this.set(window.localStorage[this.namespace]);
+	 *     },
+	 *     save: function () {
+	 *         // save the model as a plain object to localStorage
+	 *         window.localStorage[this.namespace] = this.toJSON();
+	 *     }
+	 * });
+	 *
+	 * // we now add the model to the module
+	 * Cylinder.store.use('localstorage', new LocalStorageModel);
+	 *
+	 * // we switch the store's context to always use it
+	 * // and use the get/set/unset/clear methods
+	 * Cylinder.store.switch('localstorage');
+	 * Cylinder.store.set('abc', 123);
+	 *
+	 * // we can also fetch the model directly and chain operations without switching contexts.
+	 * // just be wary that some operations may not return the model itself, like .get() or .toJSON().
+	 * Cylinder.with('localstorage').set('def', 456).unset('abc').toJSON();
+	 *
+	 * @example
+	 * // the following doesn't take advantage of the Model,
+	 * // but is an example of how to simply register a new data model
+	 * // without having to extend the default model, since .use() will
+	 * // automatically detect the type of object and convert it.
+	 * Cylinder.store.use('localstorage', {
+	 *     namespace: 'abc',
+	 *     fetch: function () {
+	 *         // load the object in localStorage to the model
+	 *         this.set(window.localStorage[this.namespace]);
+	 *     },
+	 *     save: function () {
+	 *         // save the model as a plain object to localStorage
+	 *         window.localStorage[this.namespace] = this.toJSON();
+	 *     }
+	 * });
+	 *
+	 * Cylinder.store.switch('localstorage');
+	 * Cylinder.store.set('abc', 123);
+	 */
+	module.Model = Backbone.Model.extend({
+		initialize: function () {
+			// on this barebones initialize method,
+			// we'll make the model save itself when something changes
+			this.on('change', function () {
+				return this.save();
+			}, this);
+		},
 
-	// multiple methods of loading and saving.
-	// you can add more methods and then change which one is used.
-	var methods = {
+		sync: function () {},
+		fetch: function () {},
+		save: function () {},
+		destroy: function () {}
+	});
 
-		localstorage: {
-			// REQUIRES IE8+, FF4+, CHROME4+, SAFARI4+, OPERA10.5+, iOS7+, ANDROID2.1+!
-			// http://caniuse.com/#search=localstorage
-			load: function () {
-				if (cylinder.dependency('localStorage', false)) { // CHECK DEPENDENCY!
-					collection = JSON.parse(window.localStorage.getItem('cylinder_data') || '{}');
-					if (_.isFunction(method_load_callback)) method_load_callback(collection);
-				}
-			},
-			save: function () {
-				if (cylinder.dependency('localStorage', false)) { // CHECK DEPENDENCY!
-					window.localStorage.removeItem('cylinder_data');
-					window.localStorage.setItem('cylinder_data', JSON.stringify(collection));
-				}
+	/**
+	 * Adds a model to the data store.<br />
+	 * The object provided can be either an already initialized instance of a data model,
+	 * an uninstanced data model, or a plain object that will be converted to a new data model.
+	 *
+	 * @param  {String}       name - The name of the model to add.
+	 * @param  {Model|Object} obj  - The model to add.
+	 * @return {Model} Returns the model itself after being added and initialized.
+	 */
+	module.use = function (name, obj) {
+		var model = null;
+
+		if (obj instanceof Backbone.Model) {
+			// we have a backbone model, instanced
+			// so we'll just add and return
+			model = obj;
+		}
+		else if (obj.constructor === Backbone.Model.constructor) {
+			// we have a backbone model, uninstanced
+			// so we'll start a new instance and add it!
+			model = new obj;
+		}
+		else if (!_.isEmpty(obj)) {
+			// we have a plain old object
+			// so we create a new model with its properties
+			var objmodel = module.Model.extend(obj);
+			model = new objmodel;
+		}
+
+		models[name] = model;
+		return model;
+	};
+
+	/**
+	 * Removes a model from the data store.
+	 * @param  {String} name - The name of the data model to remove.
+	 * @return {Model} Returns the model itself after being removed.
+	 */
+	module.unuse = function (name) {
+		// we're gonna have to check
+		// if the model exists or not
+		if (!_.has(models, name)) {
+			if (exception !== false) throw new CylinderException('Trying to remove a non-existing or invalid model from store.');
+			return null;
+		}
+
+		// we cannot let the user unset a model
+		// if the model is the one currently being used
+		if (name === contextname) {
+			if (exception !== false) throw new CylinderException('Trying to remove the currently used data model from store. Switch to another model first.');
+			return null;
+		}
+
+		// everything is alright,
+		// remove the model from the collection.
+		var model = models[name];
+		delete models[name];
+		return model;
+	};
+
+	/**
+	 * Returns a list of existing models.
+	 * @return {Array}
+	 */
+	module.models = function () {
+		return _.mapObject(models, function (model, name) {
+			return model;
+		});
+	};
+
+	/**
+	 * Returns a previously registered data model.
+	 *
+	 * @param  {String}  name      - The name of the model.
+	 * @param  {Boolean} exception - If false, the method won't throw an exception if the model is not found.
+	 * @return {Model} Returns the model itself, or null if it's not found and <code>exception</code> is <code>false</code>.
+	 */
+	module.with = function (name, exception) {
+		// we're gonna have to check
+		// if the model exists or not
+		if (!_.has(models, name)) {
+			if (exception !== false) throw new CylinderException('Trying to get non-existing or invalid model from store.');
+			return null;
+		}
+
+		return models[name];
+	};
+
+	/**
+	 * Switches store contexts to a previously registered data model.<br /><br />
+	 * After switching, the following methods are available on the module:<br />
+	 * <ul>
+	 * <li><a href="http://backbonejs.org/#Model-fetch" target="_blank">fetch()</a></li>
+	 * <li><a href="http://backbonejs.org/#Model-save" target="_blank">save()</a></li>
+	 * <li><a href="http://backbonejs.org/#Model-destroy" target="_blank">destroy()</a></li>
+	 * <li><a href="http://backbonejs.org/#Model-get" target="_blank">get()</a></li>
+	 * <li><a href="http://backbonejs.org/#Model-escape" target="_blank">escape()</a></li>
+	 * <li><a href="http://backbonejs.org/#Model-set" target="_blank">set()</a></li>
+	 * <li><a href="http://backbonejs.org/#Model-has" target="_blank">has()</a></li>
+	 * <li><a href="http://backbonejs.org/#Model-unset" target="_blank">unset()</a></li>
+	 * <li><a href="http://backbonejs.org/#Model-clear" target="_blank">clear()</a></li>
+	 * <li><a href="http://backbonejs.org/#Model-toJSON" target="_blank">toJSON()</a></li>
+	 * </ul>
+	 *
+	 * @param  {String} name - The name of the model.
+	 * @return {Model} Returns the model itself after switching.
+	 *
+	 * @example
+	 * Cylinder.store.switch('localstorage'); // switches the "Cylinder.store" context
+	 * Cylinder.store.set('abc', 123); // sets 'abc' on localStorage
+	 * Cylinder.store.get('abc'); // => 123
+	 */
+	module.switch = function (name) {
+		var model = module.with(name, false);
+
+		// we're gonna have to check
+		// if the model exists or not
+		if (!model) {
+			throw new CylinderException('Trying to switch store context to non-existing or invalid model.');
+		}
+
+		// override module main methods
+		module.fetch = _.bind(model.fetch, model);
+		module.save = _.bind(model.save, model);
+		module.destroy = _.bind(model.destroy, model);
+
+		// overwrite module operation methods
+		module.get = _.bind(model.get, model);
+		module.escape = _.bind(model.escape, model);
+		module.set = _.bind(model.set, model);
+		module.has = _.bind(model.has, model);
+		module.unset = _.bind(model.unset, model);
+		module.clear = _.bind(model.clear, model);
+		module.toJSON = _.bind(model.toJSON, model);
+
+		// apply the new context
+		context = model;
+		contextname = name;
+		return model;
+	};
+
+	// based on the Model interface above,
+	// we'll create a new one for localstorage
+	module.use('localstorage', {
+
+		namespace: 'cylinder_data', // namespace to which we'll save all data
+
+		fetch: function () {
+			var model = this;
+			var deferred = cylinder.$.Deferred();
+			if (cylinder.dependency('localStorage', false)) {
+				// only get values from localstorage
+				// if we have localstorage enabled.
+				var collection = JSON.parse(localStorage.getItem(model.namespace));
+				model.set(collection);
+				deferred.resolve(collection);
 			}
+			else {
+				// no localstorage?
+				// no fun!
+				deferred.reject();
+			}
+			return deferred;
+		},
+
+		save: function () {
+			var model = this;
+			var deferred = cylinder.$.Deferred();
+			if (cylinder.dependency('localStorage', false)) {
+				// only save values to localstorage
+				// if we have localstorage enabled.
+				var collection = model.toJSON();
+				localStorage.removeItem(model.namespace);
+				localStorage.setItem(model.namespace, JSON.stringify(collection));
+				deferred.resolve(collection);
+			}
+			else {
+				// no localstorage?
+				// no fun!
+				deferred.reject();
+			}
+			return deferred;
 		}
 
-	};
+	});
 
-	// loads data from an available method.
-	// if specified, calls a callback at the end of that loading.
-	module.load = function (m, callback) {
-		if (cylinder.s.isBlank(m)) m = method_default;
-		if (_.isFunction(callback)) method_load_callback = callback;
-		if (m in methods) return methods[m].load(callback);
-	};
-
-	// saves the current data collection into the specified method.
-	// if no method is specified, the default method is used!
-	module.save = function (m) {
-		if (cylinder.s.isBlank(m)) m = method_default;
-		if (m in methods) return methods[m].save();
-	};
-
-	// grabs values from one or more variables.
-	// a callback can be specified, but it must be the last argument passed!
-	module.get = function () {
-		var result = {};
-		var names = null;
-		var callback = null;
-
-		if (arguments.length > 0) {
-			// check if we have arguments in this method,
-			// and if we do, check if the last one is a function!
-			names = _.flatten(arguments);
-			callback = _.last(names);
-			if (!_.isFunction(callback)) callback = null; // reset to null!
-			else names = _.initial(names); // otherwise, cut the callback from the names array!
-		}
-
-		// if there's only one name in the array
-		// then don't even bother to fetch as an array!
-		if (_.isArray(names) && names.length == 1) names = names[0];
-
-		if (_.isArray(names) && !_.isEmpty(names)) _.each(names, function (v) { result[v] = _.has(collection, v) ? collection[v] : undefined; }); // returns several
-		else if (_.isString(names) && !cylinder.s.isBlank(names)) result = _.has(collection, names) ? collection[names] : undefined; // returns only one
-		else result = collection; // RETURNS EVERYTHING!
-
-		if (_.isFunction(callback)) callback(result);
-		return result; // finish and return stuff!
-	};
-
-	// saves one or more values onto the collection.
-	// if saving multiple values, an object should be passed.
-	module.set = function (name, value) {
-		if (_.isObject(name)) _.extend(collection, name || {}); // MERGES EVERYTHING!
-		else if (!cylinder.s.isBlank(name)) collection[name] = value; // sets only one
-
-		module.save(); // save onto the storage method
-	};
-
-	// clears one or more values.
-	// the method can receive one or more arguments representing keys in the collection.
-	module.clear = function (names) {
-		if (arguments.length > 1) names = _.flatten(arguments); // if we have multiple arguments, use them!
-
-		if (_.isArray(names) && !_.isEmpty(names)) _.each(names, function (v) { delete collection[v]; }); // deletes several
-		else if (_.isString(names) && !cylinder.s.isBlank(names)) delete collection[names]; // deletes only one
-		else collection = {}; // RESETS EVERYTHING!
-
-		module.save(); // save onto the storage method
-	};
+	// now switch context to localstorage
+	// module.switch('localstorage');
 
 	return module; // finish
 
@@ -1530,7 +1741,7 @@ module.exports = function (cylinder, _module) {
 	 * @property {Boolean}        options.load_extension - Remote template file extension.
 	 * @property {Boolean}        options.fire_events    - Fires all events when rendering or doing other things.
 	 * @property {Boolean}        options.partials       - All templates will always be available as partials.
-	 * @property {String|Boolean} options.premades       - If != false, the module will look for a specific object variable for templates (default: JST).
+	 * @property {String|Boolean} options.premades       - If not false, the module will look for a specific object variable for templates (default: JST).
 	 */
 	module.options = {
 		load: false,
@@ -1592,9 +1803,7 @@ module.exports = function (cylinder, _module) {
 	};
 
 	/**
-	 * Returns a template if it exists, and
-	 * attempts to fetch from the local DOM
-	 * if it doesn't.
+	 * Returns a template if it exists, and attempts to fetch from the local DOM if it doesn't.
 	 *
 	 * @param  {String} id - The template's unique identifier.
 	 * @return {Object} Returns the generated internal template module's object, or an empty object if not found.
@@ -1625,14 +1834,14 @@ module.exports = function (cylinder, _module) {
 
 	/**
 	 * Attempts to load a remote template.<br />
-	 * The method will call <code>Promise.fail(err)</code> if one of the requested templates fails to load, independently if others succeeded.<br /><br />
+	 * If multiple strings are provided, the method will call <code>Promise.fail(err)</code> if one of them fails to load, regardless of whether others succeeded.<br /><br />
 	 * Notice: this method should be considered and used as an asynchronous method.
 	 *
 	 * @param  {...String} ids - The unique identifier(s) of the template(s) to load.
-	 * @return {Promise}   Returns a Promise object.
+	 * @return {Promise} Returns a Promise object.
 	 */
 	module.load = function () {
-		var deferred = $.Deferred();
+		var deferred = cylinder.$.Deferred();
 
 		// fetch the provided strings
 		var ids = _.chain(arguments)
@@ -1783,7 +1992,7 @@ module.exports = function (cylinder, _module) {
 	 * @return {Promise} Returns a Promise object.
 	 */
 	module.apply = function ($el, id, options, partials) {
-		var deferred = $.Deferred();
+		var deferred = cylinder.$.Deferred();
 
 		// many times we'd apply stuff to an element that would not yet exist.
 		// this time, we'll warn the developer that such element should not be null!
@@ -1846,7 +2055,7 @@ module.exports = function (cylinder, _module) {
 	 * @return {Promise} Returns a Promise object.
 	 */
 	module.replace = function ($el, options, partials) {
-		var deferred = $.Deferred();
+		var deferred = cylinder.$.Deferred();
 
 		// many times we'd apply stuff to an element that would not yet exist.
 		// this time, we'll warn the developer that such element should not be null!
