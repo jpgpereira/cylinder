@@ -33,7 +33,7 @@ module.exports = function (cylinder, _module) {
 	 * @property {Boolean}        options.load_extension - Remote template file extension.
 	 * @property {Boolean}        options.fire_events    - Fires all events when rendering or doing other things.
 	 * @property {Boolean}        options.partials       - All templates will always be available as partials.
-	 * @property {String|Boolean} options.premades       - If != false, the module will look for a specific object variable for templates (default: JST).
+	 * @property {String|Boolean} options.premades       - If not false, the module will look for a specific object variable for templates (default: JST).
 	 */
 	module.options = {
 		load: false,
@@ -95,9 +95,7 @@ module.exports = function (cylinder, _module) {
 	};
 
 	/**
-	 * Returns a template if it exists, and
-	 * attempts to fetch from the local DOM
-	 * if it doesn't.
+	 * Returns a template if it exists, and attempts to fetch from the local DOM if it doesn't.
 	 *
 	 * @param  {String} id - The template's unique identifier.
 	 * @return {Object} Returns the generated internal template module's object, or an empty object if not found.
@@ -128,14 +126,14 @@ module.exports = function (cylinder, _module) {
 
 	/**
 	 * Attempts to load a remote template.<br />
-	 * The method will call <code>Promise.fail(err)</code> if one of the requested templates fails to load, independently if others succeeded.<br /><br />
+	 * If multiple strings are provided, the method will call <code>Promise.fail(err)</code> if one of them fails to load, regardless of whether others succeeded.<br /><br />
 	 * Notice: this method should be considered and used as an asynchronous method.
 	 *
 	 * @param  {...String} ids - The unique identifier(s) of the template(s) to load.
-	 * @return {Promise}   Returns a Promise object.
+	 * @return {Promise} Returns a Promise object.
 	 */
 	module.load = function () {
-		var deferred = $.Deferred();
+		var deferred = cylinder.$.Deferred();
 
 		// fetch the provided strings
 		var ids = _.chain(arguments)
@@ -286,7 +284,7 @@ module.exports = function (cylinder, _module) {
 	 * @return {Promise} Returns a Promise object.
 	 */
 	module.apply = function ($el, id, options, partials) {
-		var deferred = $.Deferred();
+		var deferred = cylinder.$.Deferred();
 
 		// many times we'd apply stuff to an element that would not yet exist.
 		// this time, we'll warn the developer that such element should not be null!
@@ -349,7 +347,7 @@ module.exports = function (cylinder, _module) {
 	 * @return {Promise} Returns a Promise object.
 	 */
 	module.replace = function ($el, options, partials) {
-		var deferred = $.Deferred();
+		var deferred = cylinder.$.Deferred();
 
 		// many times we'd apply stuff to an element that would not yet exist.
 		// this time, we'll warn the developer that such element should not be null!

@@ -21,7 +21,7 @@ module.exports = function CylinderClass () {
 	 * The framework will check if it exists in the global scope.
 	 *
 	 * @param  {...(String|Object)} dependencies - The names of the dependencies to be checked.
-	 * @param  {Boolean} [silent] - If true, the method will not throw an exception when a mandatory dependency is not found.
+	 * @param  {Boolean}            [silent]     - If true, the method will not throw an exception when a mandatory dependency is not found.
 	 * @return {Boolean} Returns true if it exists, and throws an exception if it doesn't (unless the last argument is <code>true</code>).
 	 *
 	 * @example
@@ -133,10 +133,10 @@ module.exports = function CylinderClass () {
 
 	/**
 	 * Extends the framework's core.<br />
-	 * If <code>extend_on_init</code> is true, then the framework won't be extended until properly initialized.
+	 * If <code>extendOnInit</code> is true, then the framework won't be extended until properly initialized.
 	 *
-	 * @param  {Function|Object}      func - The extension's constructor.
-	 * @param  {Boolean}  [extend_on_init] - If true, the framework will only add 'func' after 'init' is called.
+	 * @param  {Function|Object} func           - The extension's constructor.
+	 * @param  {Boolean}         [extendOnInit] - If true, the framework will only add 'func' after 'init' is called.
 	 * @return {Mixed} Returns the result of 'func' after evaluated.
 	 *
 	 * @example
@@ -150,8 +150,8 @@ module.exports = function CylinderClass () {
 	 * console.log(Cylinder.abc); // 123
 	 * console.log(Cylinder.dfg); // 456
 	 */
-	instance.extend = function (func, extend_on_init) {
-		if (!initialized && extend_on_init) {
+	instance.extend = function (func, extendOnInit) {
+		if (!initialized && extendOnInit) {
 			if (!_.contains(extensions, func)) extensions.push(func); // add extension to cache
 			return instance; // return the framework instance!
 		}
@@ -209,11 +209,9 @@ module.exports = function CylinderClass () {
 	 * @return {Array}
 	 */
 	instance.modules = function () {
-		var result = {};
-		_.each(modules, function (func, name) {
-			result[name] = instance[name];
+		return _.mapObject(modules, function (func, name) {
+			return instance[name];
 		});
-		return result;
 	};
 
 	/**
