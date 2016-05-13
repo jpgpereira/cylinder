@@ -10,10 +10,16 @@ function CylinderClass () {
 	var initialized = false;
 
 	/**
+	 * Framework version.
+	 * @return {String}
+	 */
+	this.version = '{{v}}';
+
+	/**
 	 * Checks if the framework has been initialized.
 	 * @return {Boolean}
 	 */
-	this.initialized = function () { return initialized; }
+	this.initialized = function () { return initialized; };
 
 	/**
 	 * Validate if a variable or a dependency exists.

@@ -1,5 +1,5 @@
 /*
- * cylinder v0.11.0 (2016-05-13 12:07:01)
+ * cylinder v0.11.1 (2016-05-13 15:13:48)
  * @author Luís Soares <luis.soares@comon.pt>
  */
 
@@ -17,10 +17,16 @@ function CylinderClass () {
 	var initialized = false;
 
 	/**
+	 * Framework version.
+	 * @return {String}
+	 */
+	this.version = '0.11.1';
+
+	/**
 	 * Checks if the framework has been initialized.
 	 * @return {Boolean}
 	 */
-	this.initialized = function () { return initialized; }
+	this.initialized = function () { return initialized; };
 
 	/**
 	 * Validate if a variable or a dependency exists.
