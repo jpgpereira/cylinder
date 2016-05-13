@@ -1,24 +1,23 @@
-module.exports = function CylinderException (message, value) {
-
-	/**
-	 * Creates a new CylinderException object.
-	 * @exports CylinderException
-	 * @param {String} message - The message for this exception.
-	 * @param {Mixed}  [value] - A value for this exception.
-	 */
-	var exception = this;
+/**
+ * Creates a new CylinderException object.
+ *
+ * @class
+ * @param {String} message - The message for this exception.
+ * @param {Mixed}  [value] - A value for this exception.
+ */
+function CylinderException (message, value) {
 
 	/**
 	 * The exception's value.
 	 * @type {Mixed}
 	 */
-	exception.value = value;
+	this.value = value;
 
 	/**
 	 * The exception's message.
 	 * @type {String}
 	 */
-	exception.message = message != null
+	this.message = message != null
 		? message.toString()
 		: message;
 
@@ -26,10 +25,10 @@ module.exports = function CylinderException (message, value) {
 	 * Turns the exception into a string.
 	 * @return {String}
 	 */
-	exception.toString = function () {
-		return exception.message;
+	this.toString = function () {
+		return this.message;
 	};
 
-	return exception;
-
 };
+
+module.exports = CylinderException;

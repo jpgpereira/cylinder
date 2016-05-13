@@ -10,4 +10,4 @@ build:
 
 docs:
 - clean:docs # clear the documentation folder
-- jsdoc:docs # run jsdoc to generate documentation files
+- jsdoc2md:docs # run jsdoc to generate documentation files

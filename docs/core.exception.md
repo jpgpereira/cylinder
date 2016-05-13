@@ -1,6 +1,20 @@
-<a name="module_CylinderException"></a>
+<a name="CylinderException"></a>
 
 ## CylinderException
+**Kind**: global class  
+
+* [CylinderException](#CylinderException)
+    * [new CylinderException(message, [value])](#new_CylinderException_new)
+    * [.value](#CylinderException+value) : <code>Mixed</code>
+    * [.message](#CylinderException+message) : <code>String</code>
+    * [.toString()](#CylinderException+toString) ⇒ <code>String</code>
+
+
+* * *
+
+<a name="new_CylinderException_new"></a>
+
+### new CylinderException(message, [value])
 Creates a new CylinderException object.
 
 <table>
@@ -20,38 +34,32 @@ Creates a new CylinderException object.
 </table>
 
 
-* [CylinderException](#module_CylinderException)
-    * [.value](#module_CylinderException.value) : <code>Mixed</code>
-    * [.message](#module_CylinderException.message) : <code>String</code>
-    * [.toString()](#module_CylinderException.toString) ⇒ <code>String</code>
-
-
 * * *
 
-<a name="module_CylinderException.value"></a>
+<a name="CylinderException+value"></a>
 
-### CylinderException.value : <code>Mixed</code>
+### cylinderException.value : <code>Mixed</code>
 The exception's value.
 
-**Kind**: static property of <code>[CylinderException](#module_CylinderException)</code>  
+**Kind**: instance property of <code>[CylinderException](#CylinderException)</code>  
 
 * * *
 
-<a name="module_CylinderException.message"></a>
+<a name="CylinderException+message"></a>
 
-### CylinderException.message : <code>String</code>
+### cylinderException.message : <code>String</code>
 The exception's message.
 
-**Kind**: static property of <code>[CylinderException](#module_CylinderException)</code>  
+**Kind**: instance property of <code>[CylinderException](#CylinderException)</code>  
 
 * * *
 
-<a name="module_CylinderException.toString"></a>
+<a name="CylinderException+toString"></a>
 
-### CylinderException.toString() ⇒ <code>String</code>
+### cylinderException.toString() ⇒ <code>String</code>
 Turns the exception into a string.
 
-**Kind**: static method of <code>[CylinderException](#module_CylinderException)</code>  
+**Kind**: instance method of <code>[CylinderException](#CylinderException)</code>  
 
 * * *
 

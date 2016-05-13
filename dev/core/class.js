@@ -1,18 +1,19 @@
-module.exports = function CylinderClass () {
+/**
+ * Main framework class.
+ * Extends upon [Backbone.Events](http://backbonejs.org/#Events).
+ *
+ * @class
+ */
+function CylinderClass () {
 
-	/**
-	 * Main framework class.<br />
-	 * This class extends on <a target="_blank" href="http://backbonejs.org/#Events">Backbone.Events</a>.
-	 * @exports Cylinder
-	 */
-	var instance = this;
+	var instance = this; // get a reference to this instance!
 	var initialized = false;
 
 	/**
 	 * Checks if the framework has been initialized.
 	 * @return {Boolean}
 	 */
-	instance.initialized = function () { return initialized; }
+	this.initialized = function () { return initialized; }
 
 	/**
 	 * Validate if a variable or a dependency exists.
@@ -25,6 +26,7 @@ module.exports = function CylinderClass () {
 	 * @example
 	 * // throws an exception because "asdf" is not declared.
 	 * // you can also specify objects for a cleaner exception output.
+	 *
 	 * Cylinder.dependency(
 	 *     'async',
 	 *     'jQuery',
@@ -37,11 +39,13 @@ module.exports = function CylinderClass () {
 	 * @example
 	 * // you can check for dependencies inside a variable
 	 * // and the whole family tree will be checked from top-level
+	 *
 	 * Cylinder.dependency('$.fn.slick', 'Cylinder.router', 'Cylinder.resize');
 	 *
 	 * @example
-	 * // doesn't throw an exception
+	 * // if `true` is sent at the end, the method doesn't throw an exception
 	 * // and allows the programmer to gracefully handle missing dependencies
+	 *
 	 * if (Cylinder.dependency('$.fn.velocity', true)) {
 	 *     // velocity is present
 	 *     $('#element').velocity({ top: 0 });
@@ -52,7 +56,7 @@ module.exports = function CylinderClass () {
 	 *     $('#element').animate({ top: 0 });
 	 * }
 	 */
-	instance.dependency = function () {
+	this.dependency = function () {
 		var args = arguments; // make a copy of all received arguments!
 		var loud = !_.isBoolean(_.last(args)); // if the last argument is not a boolean, throw exception!
 		if (!loud) args = _.initial(args); // if the last argument IS a boolean, remove it from the arguments!
@@ -88,7 +92,7 @@ module.exports = function CylinderClass () {
 	// CHECK MAIN DEPENDENCIES NOW!
 	// If we don't do this, the framework will just
 	// die in the water. We don't want to die like that.
-	instance.dependency(
+	this.dependency(
 		'async',
 		'jQuery',
 		{ package: '_', name: 'underscore.js' },
@@ -103,30 +107,24 @@ module.exports = function CylinderClass () {
 	 * The jQuery instance.
 	 * @type {jQuery}
 	 */
-	instance.$ = jQuery;
+	this.$ = jQuery;
 
 	/**
 	 * The underscore.js instance.
 	 * @type {Underscore}
 	 */
-	instance._ = _;
+	this._ = _;
 
 	/**
 	 * The underscore.string instance.
 	 * @type {UnderscoreString}
 	 */
-	instance.s = s;
-
-	/**
-	 * Debug mode.
-	 * @type {Boolean}
-	 */
-	instance.debug = false;
+	this.s = s;
 
 	// We'll mix in the underscore and underscore.string modules,
 	// so that we don't have to mess with external files.
 	// We'll also add event handling to Cylinder.
-	_.extend(_, { str: instance.s }); // add _.str to _
+	_.extend(_, { str: this.s }); // add _.str to _
 	_.extend(this, Backbone.Events); // add events
 
 	/**
@@ -148,7 +146,7 @@ module.exports = function CylinderClass () {
 	 * console.log(Cylinder.abc); // 123
 	 * console.log(Cylinder.dfg); // 456
 	 */
-	instance.extend = function (func, extendOnInit) {
+	this.extend = function (func, extendOnInit) {
 		if (!initialized && extendOnInit) {
 			if (!_.contains(extensions, func)) extensions.push(func); // add extension to cache
 			return instance; // return the framework instance!
@@ -179,7 +177,7 @@ module.exports = function CylinderClass () {
 	 *
 	 * Cylinder.mymodule.alert('hello!');
 	 */
-	instance.module = function (name, func) {
+	this.module = function (name, func) {
 		// check if we have a name and if it is a string!
 		// if the name is blank, then forget about it and throw error!
 		if (!_.isString(name) || (/^\s*$/).test(name)) throw new CylinderException('Trying to add a nameless module!');
@@ -204,16 +202,16 @@ module.exports = function CylinderClass () {
 
 	/**
 	 * Returns a list of existing modules.
-	 * @return {Array}
+	 * @return {Object}
 	 */
-	instance.modules = function () {
+	this.modules = function () {
 		return _.mapObject(modules, function (func, name) {
 			return instance[name];
 		});
 	};
 
 	/**
-	 * Properly initializes the framework.<br />
+	 * Properly initializes the framework and all of the extensions and modules added to it.<br />
 	 * This method is based on jQuery's <code>$(document).ready()</code> shorthand.
 	 *
 	 * @param  {Function} [callback] - Function to run after initialization.
@@ -227,7 +225,7 @@ module.exports = function CylinderClass () {
 	 *     console.log('modules present:', cl.modules());
 	 * });
 	 */
-	instance.init = function (callback) {
+	this.init = function (callback) {
 		if (initialized) return instance; // don't do a thing if this already ran!
 		initialized = true; // tell the framework that we're set up and ready to go!
 
@@ -257,6 +255,6 @@ module.exports = function CylinderClass () {
 		return instance;
 	};
 
-	return instance; // finish constructing!
-
 };
+
+module.exports = CylinderClass;

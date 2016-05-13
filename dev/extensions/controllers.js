@@ -1,3 +1,7 @@
+/**
+ * @exports CylinderControllers
+ * @augments CylinderClass
+ */
 module.exports = function (instance) {
 
 	var initialized = false;
@@ -10,6 +14,8 @@ module.exports = function (instance) {
 	 * The controller itself will be added to the internal controller list
 	 * (accessible through <code>controllers()</code>), but it will not be added to the global scope.
 	 *
+	 * @function controller
+	 * @memberof module:CylinderControllers
 	 * @param  {String}   name - The controller's name.
 	 * @param  {Function} func - The controller's constructor.
 	 * @return {Mixed} Returns the result of 'func' after evaluated.
@@ -61,6 +67,9 @@ module.exports = function (instance) {
 
 	/**
 	 * Returns a list of existing controllers.
+	 *
+	 * @function controllers
+	 * @memberof module:CylinderControllers
 	 * @return {Array}
 	 */
 	instance.controllers = function () {
@@ -73,6 +82,8 @@ module.exports = function (instance) {
 	 * Properly initializes Cylinder's controllers.<br />
 	 * This method is based on jQuery's <code>$(document).ready()</code> shorthand.
 	 *
+	 * @function initControllers
+	 * @memberof module:CylinderControllers
 	 * @param  {Function} [callback] - Function to run after initialization.
 	 * @return {CylinderClass} Returns the instance itself.
 	 */

@@ -79,7 +79,7 @@ module.exports = function (cylinder, _module) {
 		_.each(obj, function (v, k) {
 			var $el = module.$head.find('meta[name="' + k + '"], meta[property="' + k + '"]');
 			if ($el.length < 1) {
-				if (cylinder.debug) console.warn('CYLINDER.DOM: tried to change meta "' + k + '" but it doesn\'t exist');
+				console.warn('CYLINDER.DOM: tried to change meta "' + k + '" but it doesn\'t exist');
 				return;
 			}
 			$el.attr('content', v);
