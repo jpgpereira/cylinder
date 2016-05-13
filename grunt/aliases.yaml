@@ -10,5 +10,7 @@ build:
 - uglify:pkgd # ALTERNATIVE - compile everything into one file
 
 docs:
-- clean:docs # clear the documentation folder
+- clean:docs_vendor # clear the vendor files documentation folder
+- clean:docs # clear the generated documentation folder
 - jsdoc2md:docs # run jsdoc to generate documentation files
+- copy:docs_vendor # copy vendor files into documentation folder
