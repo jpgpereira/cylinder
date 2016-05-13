@@ -5,6 +5,7 @@
 
 * [CylinderClass](#CylinderClass)
     * [new CylinderClass()](#new_CylinderClass_new)
+    * [.version](#CylinderClass+version) ⇒ <code>String</code>
     * [.$](#CylinderClass+$) : <code>jQuery</code>
     * [._](#CylinderClass+_) : <code>Underscore</code>
     * [.s](#CylinderClass+s) : <code>UnderscoreString</code>
@@ -23,6 +24,15 @@
 ### new CylinderClass()
 Main framework class.Extends upon [Backbone.Events](http://backbonejs.org/#Events).
 
+
+* * *
+
+<a name="CylinderClass+version"></a>
+
+### cylinderClass.version ⇒ <code>String</code>
+Framework version.
+
+**Kind**: instance property of <code>[CylinderClass](#CylinderClass)</code>  
 
 * * *
 

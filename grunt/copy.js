@@ -52,6 +52,17 @@ module.exports = {
 			}
 
 		]
+	},
+
+	docs_vendor: {
+		files: [
+			{
+				expand: true,
+				cwd: '<%= project.dist %>',
+				src: [ 'vendor/*', 'cylinder.min.js', 'cylinder.min.js.map' ],
+				dest: '<%= project.docs_vendor %>'
+			}
+		]
 	}
 
 };

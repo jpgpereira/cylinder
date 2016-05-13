@@ -20,6 +20,7 @@ module.exports = {
 
 	// docs folders
 	docs: './docs',
-	docs_generated: '<%= project.docs %>/generated'
+	docs_generated: '<%= project.docs %>/generated',
+	docs_vendor: '<%= project.docs %>/library/js/cylinder'
 
 };
