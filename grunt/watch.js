@@ -21,7 +21,7 @@ module.exports = {
 		tasks: [
 			'browserify:dist',
 			'uglify:dist',
-			// 'uglify:pkgd',
+			'uglify:pkgd',
 			'clean:docs',
 			'jsdoc2md:docs'
 		],
