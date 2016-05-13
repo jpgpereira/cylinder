@@ -19,6 +19,7 @@ module.exports = {
 	dist_vendor: '<%= project.dist %>/vendor',
 
 	// docs folders
-	docs: './docs'
+	docs: './docs',
+	docs_generated: '<%= project.docs %>/generated'
 
 };

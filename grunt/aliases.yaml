@@ -1,14 +1,14 @@
 default:
 - build # build the file
-- docs # generate documentation
 
 build:
 - clean:dist # clear the distribution folder
 - copy:vendor # copy the JS vendors dir
 - browserify:dist # convert JS into CYLINDER file
+- mustache_render:dist # convert any necessary mustache tags
 - uglify:dist # minify our CYLINDER file
 - uglify:pkgd # ALTERNATIVE - compile everything into one file
 
 docs:
 - clean:docs # clear the documentation folder
-- jsdoc:docs # run jsdoc to generate documentation files
+- jsdoc2md:docs # run jsdoc to generate documentation files

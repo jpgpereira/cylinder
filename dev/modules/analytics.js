@@ -1,21 +1,16 @@
-/**
- * Analytics module for CylinderClass.
- *
- * @module Cylinder/analytics
- * @param {CylinderClass} cylinder - The running Cylinder instance.
- * @param {Object} module - A premade module.
- */
-
 module.exports = function (cylinder, _module) {
 
-	/** @exports Cylinder/analytics */
+	/**
+	 * Analytics module for CylinderClass.
+	 * @exports analytics
+	 */
 	var module = _.extend({}, _module);
 
 	/**
 	 * The options taken by the module.
 	 * @type     {Object}
-	 * @property {Boolean} options.debug - If true, requests won't be sent.
-	 * @property {Boolean}   options.log - Should the module log into the console?
+	 * @property {Boolean} debug - If true, requests won't be sent.
+	 * @property {Boolean} log   - Should the module log into the console?
 	 */
 	module.options = {
 		debug: false,
@@ -59,9 +54,9 @@ module.exports = function (cylinder, _module) {
 	/**
 	 * Send an Analytics event to both <code>ga.js</code> and <code>analytics.js</code>.
 	 * @param {String|Number} category - The event's category.
-	 * @param {String|Number}   action - The event's action.
-	 * @param {String|Number}  [label] - The event's label for that action.
-	 * @param {String|Number}  [value] - The event's value for that action.
+	 * @param {String|Number} action   - The event's action.
+	 * @param {String|Number} [label]  - The event's label for that action.
+	 * @param {String|Number} [value]  - The event's value for that action.
 	 */
 	module.event = function (category, action, label, value) {
 		if (module.options.log && !_.isUndefined(console.log))

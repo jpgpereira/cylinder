@@ -6,7 +6,7 @@ module.exports = {
 	},
 
 	docs: {
-		src: ['<%= project.docs %>'],
+		src: ['<%= project.docs_generated %>'],
 		options: { force: true }
 	}
 

@@ -1,13 +1,9 @@
-/**
- * Templates module for CylinderClass.
- * @module Cylinder/templates
- * @param {CylinderClass} cylinder - The running Cylinder instance.
- * @param {Object} module - A premade module.
- */
-
 module.exports = function (cylinder, _module) {
 
-	/** @exports Cylinder/templates */
+	/**
+	 * Templates module for CylinderClass.
+	 * @exports templates
+	 */
 	var module = _.extend({}, _module);
 
 	// ALL DEPENDENCIES FIRST!
@@ -27,13 +23,13 @@ module.exports = function (cylinder, _module) {
 	/**
 	 * The options taken by the module.
 	 * @type     {Object}
-	 * @property {Boolean}        options.load           - If true, the module will try to load templates automatically.
-	 * @property {Boolean}        options.load_cache     - If true, the browser will cache any remotely-fetched templates.
-	 * @property {Boolean}        options.load_base_path - Remote template base path.
-	 * @property {Boolean}        options.load_extension - Remote template file extension.
-	 * @property {Boolean}        options.fire_events    - Fires all events when rendering or doing other things.
-	 * @property {Boolean}        options.partials       - All templates will always be available as partials.
-	 * @property {String|Boolean} options.premades       - If not false, the module will look for a specific object variable for templates (default: JST).
+	 * @property {Boolean}        load           - If true, the module will try to load templates automatically.
+	 * @property {Boolean}        load_cache     - If true, the browser will cache any remotely-fetched templates.
+	 * @property {Boolean}        load_base_path - Remote template base path.
+	 * @property {Boolean}        load_extension - Remote template file extension.
+	 * @property {Boolean}        fire_events    - Fires all events when rendering or doing other things.
+	 * @property {Boolean}        partials       - All templates will always be available as partials.
+	 * @property {String|Boolean} premades       - If not false, the module will look for a specific object variable for templates (default: JST).
 	 */
 	module.options = {
 		load: false,

@@ -1,13 +1,9 @@
-/**
- * Store module for CylinderClass.
- * @module Cylinder/store
- * @param {CylinderClass} cylinder - The running Cylinder instance.
- * @param {Object} module - A premade module.
- */
-
 module.exports = function (cylinder, _module) {
 
-	/** @exports Cylinder/store */
+	/**
+	 * Store module for CylinderClass.
+	 * @exports store
+	 */
 	var module = _.extend({}, _module);
 
 	// registered models list
@@ -19,8 +15,7 @@ module.exports = function (cylinder, _module) {
 	/**
 	 * Default model that can and should be used to create new data models.<br />
 	 * The model is based on the standard <a href="http://backbonejs.org/#Model" target="_blank">Backbone.Model</a>, and uses the same methods.
-	 * You are free to override what this module considers as the main data model methods: <code>fetch()</code>,
-	 * <code>save()</code>, and <code>destroy()</code>.
+	 * You are free to override what this module considers as the main data model methods: <code>fetch()</code>, <code>save()</code>, and <code>destroy()</code>.
 	 *
 	 * @type     {Model}
 	 * @property {Function} Model.fetch   - Loads properties onto the model. The module does not call this method automatically.

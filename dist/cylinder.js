@@ -1,27 +1,32 @@
 /*
- * cylinder v0.11.0 (2016-05-12 16:43:16)
+ * cylinder v0.11.1 (2016-05-13 15:13:48)
  * @author Luís Soares <luis.soares@comon.pt>
  */
 
 
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 /**
- * Main framework class.<br />
- * This class extends on <a target="_blank" href="http://backbonejs.org/#Events">Backbone.Events</a>.
+ * Main framework class.
+ * Extends upon [Backbone.Events](http://backbonejs.org/#Events).
  *
- * @class CylinderClass
+ * @class
  */
+function CylinderClass () {
 
-module.exports = function CylinderClass () {
-
-	var instance = this;
+	var instance = this; // get a reference to this instance!
 	var initialized = false;
+
+	/**
+	 * Framework version.
+	 * @return {String}
+	 */
+	this.version = '0.11.1';
 
 	/**
 	 * Checks if the framework has been initialized.
 	 * @return {Boolean}
 	 */
-	instance.initialized = function () { return initialized; }
+	this.initialized = function () { return initialized; };
 
 	/**
 	 * Validate if a variable or a dependency exists.
@@ -34,6 +39,7 @@ module.exports = function CylinderClass () {
 	 * @example
 	 * // throws an exception because "asdf" is not declared.
 	 * // you can also specify objects for a cleaner exception output.
+	 *
 	 * Cylinder.dependency(
 	 *     'async',
 	 *     'jQuery',
@@ -46,11 +52,13 @@ module.exports = function CylinderClass () {
 	 * @example
 	 * // you can check for dependencies inside a variable
 	 * // and the whole family tree will be checked from top-level
+	 *
 	 * Cylinder.dependency('$.fn.slick', 'Cylinder.router', 'Cylinder.resize');
 	 *
 	 * @example
-	 * // doesn't throw an exception
+	 * // if `true` is sent at the end, the method doesn't throw an exception
 	 * // and allows the programmer to gracefully handle missing dependencies
+	 *
 	 * if (Cylinder.dependency('$.fn.velocity', true)) {
 	 *     // velocity is present
 	 *     $('#element').velocity({ top: 0 });
@@ -61,7 +69,7 @@ module.exports = function CylinderClass () {
 	 *     $('#element').animate({ top: 0 });
 	 * }
 	 */
-	instance.dependency = function () {
+	this.dependency = function () {
 		var args = arguments; // make a copy of all received arguments!
 		var loud = !_.isBoolean(_.last(args)); // if the last argument is not a boolean, throw exception!
 		if (!loud) args = _.initial(args); // if the last argument IS a boolean, remove it from the arguments!
@@ -97,7 +105,7 @@ module.exports = function CylinderClass () {
 	// CHECK MAIN DEPENDENCIES NOW!
 	// If we don't do this, the framework will just
 	// die in the water. We don't want to die like that.
-	instance.dependency(
+	this.dependency(
 		'async',
 		'jQuery',
 		{ package: '_', name: 'underscore.js' },
@@ -112,30 +120,24 @@ module.exports = function CylinderClass () {
 	 * The jQuery instance.
 	 * @type {jQuery}
 	 */
-	instance.$ = jQuery;
+	this.$ = jQuery;
 
 	/**
 	 * The underscore.js instance.
 	 * @type {Underscore}
 	 */
-	instance._ = _;
+	this._ = _;
 
 	/**
 	 * The underscore.string instance.
 	 * @type {UnderscoreString}
 	 */
-	instance.s = s;
-
-	/**
-	 * Debug mode.
-	 * @type {Boolean}
-	 */
-	instance.debug = false;
+	this.s = s;
 
 	// We'll mix in the underscore and underscore.string modules,
 	// so that we don't have to mess with external files.
 	// We'll also add event handling to Cylinder.
-	_.extend(_, { str: instance.s }); // add _.str to _
+	_.extend(_, { str: this.s }); // add _.str to _
 	_.extend(this, Backbone.Events); // add events
 
 	/**
@@ -157,7 +159,7 @@ module.exports = function CylinderClass () {
 	 * console.log(Cylinder.abc); // 123
 	 * console.log(Cylinder.dfg); // 456
 	 */
-	instance.extend = function (func, extendOnInit) {
+	this.extend = function (func, extendOnInit) {
 		if (!initialized && extendOnInit) {
 			if (!_.contains(extensions, func)) extensions.push(func); // add extension to cache
 			return instance; // return the framework instance!
@@ -188,7 +190,7 @@ module.exports = function CylinderClass () {
 	 *
 	 * Cylinder.mymodule.alert('hello!');
 	 */
-	instance.module = function (name, func) {
+	this.module = function (name, func) {
 		// check if we have a name and if it is a string!
 		// if the name is blank, then forget about it and throw error!
 		if (!_.isString(name) || (/^\s*$/).test(name)) throw new CylinderException('Trying to add a nameless module!');
@@ -213,16 +215,16 @@ module.exports = function CylinderClass () {
 
 	/**
 	 * Returns a list of existing modules.
-	 * @return {Array}
+	 * @return {Object}
 	 */
-	instance.modules = function () {
+	this.modules = function () {
 		return _.mapObject(modules, function (func, name) {
 			return instance[name];
 		});
 	};
 
 	/**
-	 * Properly initializes the framework.<br />
+	 * Properly initializes the framework and all of the extensions and modules added to it.<br />
 	 * This method is based on jQuery's <code>$(document).ready()</code> shorthand.
 	 *
 	 * @param  {Function} [callback] - Function to run after initialization.
@@ -236,7 +238,7 @@ module.exports = function CylinderClass () {
 	 *     console.log('modules present:', cl.modules());
 	 * });
 	 */
-	instance.init = function (callback) {
+	this.init = function (callback) {
 		if (initialized) return instance; // don't do a thing if this already ran!
 		initialized = true; // tell the framework that we're set up and ready to go!
 
@@ -266,34 +268,31 @@ module.exports = function CylinderClass () {
 		return instance;
 	};
 
-	return instance; // finish constructing!
-
 };
+
+module.exports = CylinderClass;
 
 },{}],2:[function(require,module,exports){
 /**
  * Creates a new CylinderException object.
  *
- * @class CylinderException
+ * @class
  * @param {String} message - The message for this exception.
  * @param {Mixed}  [value] - A value for this exception.
  */
-
-module.exports = function CylinderException (message, value) {
-
-	var exception = this;
+function CylinderException (message, value) {
 
 	/**
 	 * The exception's value.
 	 * @type {Mixed}
 	 */
-	exception.value = value;
+	this.value = value;
 
 	/**
 	 * The exception's message.
 	 * @type {String}
 	 */
-	exception.message = message != null
+	this.message = message != null
 		? message.toString()
 		: message;
 
@@ -301,19 +300,19 @@ module.exports = function CylinderException (message, value) {
 	 * Turns the exception into a string.
 	 * @return {String}
 	 */
-	exception.toString = function () {
-		return exception.message;
+	this.toString = function () {
+		return this.message;
 	};
-
-	return exception;
 
 };
 
+module.exports = CylinderException;
+
 },{}],3:[function(require,module,exports){
 /**
+ * @exports CylinderControllers
  * @augments CylinderClass
  */
-
 module.exports = function (instance) {
 
 	var initialized = false;
@@ -326,6 +325,8 @@ module.exports = function (instance) {
 	 * The controller itself will be added to the internal controller list
 	 * (accessible through <code>controllers()</code>), but it will not be added to the global scope.
 	 *
+	 * @function controller
+	 * @memberof module:CylinderControllers
 	 * @param  {String}   name - The controller's name.
 	 * @param  {Function} func - The controller's constructor.
 	 * @return {Mixed} Returns the result of 'func' after evaluated.
@@ -377,6 +378,9 @@ module.exports = function (instance) {
 
 	/**
 	 * Returns a list of existing controllers.
+	 *
+	 * @function controllers
+	 * @memberof module:CylinderControllers
 	 * @return {Array}
 	 */
 	instance.controllers = function () {
@@ -389,6 +393,8 @@ module.exports = function (instance) {
 	 * Properly initializes Cylinder's controllers.<br />
 	 * This method is based on jQuery's <code>$(document).ready()</code> shorthand.
 	 *
+	 * @function initControllers
+	 * @memberof module:CylinderControllers
 	 * @param  {Function} [callback] - Function to run after initialization.
 	 * @return {CylinderClass} Returns the instance itself.
 	 */
@@ -453,24 +459,19 @@ module.exports = function (instance) {
 })(window);
 
 },{"./core/class":1,"./core/exception":2,"./extensions/controllers":3,"./modules/analytics":5,"./modules/dom":6,"./modules/resize":7,"./modules/router":8,"./modules/scroll":9,"./modules/store":10,"./modules/templates":11,"./modules/utils":12}],5:[function(require,module,exports){
-/**
- * Analytics module for CylinderClass.
- *
- * @module Cylinder/analytics
- * @param {CylinderClass} cylinder - The running Cylinder instance.
- * @param {Object} module - A premade module.
- */
-
 module.exports = function (cylinder, _module) {
 
-	/** @exports Cylinder/analytics */
+	/**
+	 * Analytics module for CylinderClass.
+	 * @exports analytics
+	 */
 	var module = _.extend({}, _module);
 
 	/**
 	 * The options taken by the module.
 	 * @type     {Object}
-	 * @property {Boolean} options.debug - If true, requests won't be sent.
-	 * @property {Boolean}   options.log - Should the module log into the console?
+	 * @property {Boolean} debug - If true, requests won't be sent.
+	 * @property {Boolean} log   - Should the module log into the console?
 	 */
 	module.options = {
 		debug: false,
@@ -514,9 +515,9 @@ module.exports = function (cylinder, _module) {
 	/**
 	 * Send an Analytics event to both <code>ga.js</code> and <code>analytics.js</code>.
 	 * @param {String|Number} category - The event's category.
-	 * @param {String|Number}   action - The event's action.
-	 * @param {String|Number}  [label] - The event's label for that action.
-	 * @param {String|Number}  [value] - The event's value for that action.
+	 * @param {String|Number} action   - The event's action.
+	 * @param {String|Number} [label]  - The event's label for that action.
+	 * @param {String|Number} [value]  - The event's value for that action.
 	 */
 	module.event = function (category, action, label, value) {
 		if (module.options.log && !_.isUndefined(console.log))
@@ -532,17 +533,12 @@ module.exports = function (cylinder, _module) {
 };
 
 },{}],6:[function(require,module,exports){
-/**
- * DOM management module for CylinderClass.
- *
- * @module Cylinder/dom
- * @param {CylinderClass} cylinder - The running Cylinder instance.
- * @param {Object} module - A premade module.
- */
-
 module.exports = function (cylinder, _module) {
 
-	/** @exports Cylinder/dom */
+	/**
+	 * DOM management module for CylinderClass.
+	 * @exports dom
+	 */
 	var module = _.extend({}, _module);
 
 	// ALL DEPENDENCIES FIRST!
@@ -553,7 +549,7 @@ module.exports = function (cylinder, _module) {
 	/**
 	 * The options taken by the module.
 	 * @type     {Object}
-	 * @property {String} options.title - The app's default title.
+	 * @property {String} title - The app's default title.
 	 */
 	module.options = {
 		title: 'Cylinder'
@@ -618,7 +614,7 @@ module.exports = function (cylinder, _module) {
 		_.each(obj, function (v, k) {
 			var $el = module.$head.find('meta[name="' + k + '"], meta[property="' + k + '"]');
 			if ($el.length < 1) {
-				if (cylinder.debug) console.warn('CYLINDER.DOM: tried to change meta "' + k + '" but it doesn\'t exist');
+				console.warn('CYLINDER.DOM: tried to change meta "' + k + '" but it doesn\'t exist');
 				return;
 			}
 			$el.attr('content', v);
@@ -633,17 +629,12 @@ module.exports = function (cylinder, _module) {
 /*! viewportSize | Author: Tyson Matanich, 2013 | License: MIT */
 (function(n){n.viewportSize={},n.viewportSize.getHeight=function(){return t("Height")},n.viewportSize.getWidth=function(){return t("Width")};var t=function(t){var f,o=t.toLowerCase(),e=n.document,i=e.documentElement,r,u;return n["inner"+t]===undefined?f=i["client"+t]:n["inner"+t]!=i["client"+t]?(r=e.createElement("body"),r.id="vpw-test-b",r.style.cssText="overflow:scroll",u=e.createElement("div"),u.id="vpw-test-d",u.style.cssText="position:absolute;top:-1000px",u.innerHTML="<style>@media("+o+":"+i["client"+t]+"px){body#vpw-test-b div#vpw-test-d{"+o+":7px!important}}<\/style>",r.appendChild(u),i.insertBefore(r,e.head),f=u["offset"+t]==7?i["client"+t]:n["inner"+t],i.removeChild(r)):f=n["inner"+t],f}})(window);
 
-/**
- * Resize module for CylinderClass.
- *
- * @module Cylinder/resize
- * @param {CylinderClass} cylinder - The running Cylinder instance.
- * @param {Object} module - A premade module.
- */
-
 module.exports = function (cylinder, _module) {
 
-	/** @exports Cylinder/resize */
+	/**
+	 * Resize module for CylinderClass.
+	 * @exports resize
+	 */
 	var module = _.extend({}, _module);
 
 	// ALL DEPENDENCIES FIRST!
@@ -816,29 +807,24 @@ module.exports = function (cylinder, _module) {
 };
 
 },{}],8:[function(require,module,exports){
-/**
- * Router module for CylinderClass.
- *
- * @module Cylinder/router
- * @param {CylinderClass} cylinder - The running Cylinder instance.
- * @param {Object} module - A premade module.
- */
-
 module.exports = function (cylinder, _module) {
 
-	/** @exports Cylinder/router */
+	/**
+	 * Router module for CylinderClass.
+	 * @exports router
+	 */
 	var module = _.extend({}, _module);
 
 	/**
 	 * The options taken by the module.
 	 * @type     {Object}
-	 * @property {Boolean} options.push     - If true, the module will attempt to use HTML5's pushState.<br />
-	 *                                        See <a href="http://backbonejs.org/#History" target="_blank">http://backbonejs.org/#History</a>
-	 *                                        for more details about how pushState works.
-	 * @property {Boolean} options.clicks   - If false, clicking on a link covered by <code>addHandler()</code> will bypass the module's default behaviour.
-	 * @property {Boolean} options.prefix   - Sets up a prefix for all links.
-	 * @property {Boolean} options.selector - The default element selector for the click handler given by <code>addHandler()</code>.
-	 * @property {Boolean} options.navigate_defaults - Allows for default properties to be passed to the module's internal Backbone.Router on <code>go()</code>.
+	 * @property {Boolean} push     - If true, the module will attempt to use HTML5's pushState.<br />
+	 *                                See <a href="http://backbonejs.org/#History" target="_blank">http://backbonejs.org/#History</a>
+	 *                                for more details about how pushState works.
+	 * @property {Boolean} clicks   - If false, clicking on a link covered by <code>addHandler()</code> will bypass the module's default behaviour.
+	 * @property {Boolean} prefix   - Sets up a prefix for all links.
+	 * @property {Boolean} selector - The default element selector for the click handler given by <code>addHandler()</code>.
+	 * @property {Boolean} navigate_defaults - Allows for default properties to be passed to the module's internal Backbone.Router on <code>go()</code>.
 	 */
 	module.options = {
 		push: false, // is pushState navigation on?
@@ -1203,15 +1189,6 @@ module.exports = function (cylinder, _module) {
 };
 
 },{}],9:[function(require,module,exports){
-/**
- * Scroll module for CylinderClass.<br />
- * This module extends on <a target="_blank" href="http://backbonejs.org/#Events">Backbone.Events</a>.
- *
- * @module Cylinder/scroll
- * @param {CylinderClass} cylinder - The running Cylinder instance.
- * @param {Object} module - A premade module.
- */
-
 module.exports = function (cylinder, _module) {
 
 	// ALL DEPENDENCIES FIRST!
@@ -1223,7 +1200,11 @@ module.exports = function (cylinder, _module) {
 	// This will build an object based on an element.
 	// It will add handlers and stuff automagically.
 	var initialize = function ($element, n) {
-		/** @exports Cylinder/scroll */
+		/**
+		 * Scroll module for CylinderClass.<br />
+		 * This module extends on <a target="_blank" href="http://backbonejs.org/#Events">Backbone.Events</a>.
+		 * @exports scroll
+		 */
 		var obj = _.extend({}, Backbone.Events);
 
 		/**
@@ -1420,16 +1401,12 @@ module.exports = function (cylinder, _module) {
 };
 
 },{}],10:[function(require,module,exports){
-/**
- * Store module for CylinderClass.
- * @module Cylinder/store
- * @param {CylinderClass} cylinder - The running Cylinder instance.
- * @param {Object} module - A premade module.
- */
-
 module.exports = function (cylinder, _module) {
 
-	/** @exports Cylinder/store */
+	/**
+	 * Store module for CylinderClass.
+	 * @exports store
+	 */
 	var module = _.extend({}, _module);
 
 	// registered models list
@@ -1441,8 +1418,7 @@ module.exports = function (cylinder, _module) {
 	/**
 	 * Default model that can and should be used to create new data models.<br />
 	 * The model is based on the standard <a href="http://backbonejs.org/#Model" target="_blank">Backbone.Model</a>, and uses the same methods.
-	 * You are free to override what this module considers as the main data model methods: <code>fetch()</code>,
-	 * <code>save()</code>, and <code>destroy()</code>.
+	 * You are free to override what this module considers as the main data model methods: <code>fetch()</code>, <code>save()</code>, and <code>destroy()</code>.
 	 *
 	 * @type     {Model}
 	 * @property {Function} Model.fetch   - Loads properties onto the model. The module does not call this method automatically.
@@ -1706,16 +1682,12 @@ module.exports = function (cylinder, _module) {
 };
 
 },{}],11:[function(require,module,exports){
-/**
- * Templates module for CylinderClass.
- * @module Cylinder/templates
- * @param {CylinderClass} cylinder - The running Cylinder instance.
- * @param {Object} module - A premade module.
- */
-
 module.exports = function (cylinder, _module) {
 
-	/** @exports Cylinder/templates */
+	/**
+	 * Templates module for CylinderClass.
+	 * @exports templates
+	 */
 	var module = _.extend({}, _module);
 
 	// ALL DEPENDENCIES FIRST!
@@ -1735,13 +1707,13 @@ module.exports = function (cylinder, _module) {
 	/**
 	 * The options taken by the module.
 	 * @type     {Object}
-	 * @property {Boolean}        options.load           - If true, the module will try to load templates automatically.
-	 * @property {Boolean}        options.load_cache     - If true, the browser will cache any remotely-fetched templates.
-	 * @property {Boolean}        options.load_base_path - Remote template base path.
-	 * @property {Boolean}        options.load_extension - Remote template file extension.
-	 * @property {Boolean}        options.fire_events    - Fires all events when rendering or doing other things.
-	 * @property {Boolean}        options.partials       - All templates will always be available as partials.
-	 * @property {String|Boolean} options.premades       - If not false, the module will look for a specific object variable for templates (default: JST).
+	 * @property {Boolean}        load           - If true, the module will try to load templates automatically.
+	 * @property {Boolean}        load_cache     - If true, the browser will cache any remotely-fetched templates.
+	 * @property {Boolean}        load_base_path - Remote template base path.
+	 * @property {Boolean}        load_extension - Remote template file extension.
+	 * @property {Boolean}        fire_events    - Fires all events when rendering or doing other things.
+	 * @property {Boolean}        partials       - All templates will always be available as partials.
+	 * @property {String|Boolean} premades       - If not false, the module will look for a specific object variable for templates (default: JST).
 	 */
 	module.options = {
 		load: false,
@@ -2116,16 +2088,12 @@ module.exports = function (cylinder, _module) {
 };
 
 },{}],12:[function(require,module,exports){
-/**
- * Utilities module for CylinderClass.
- * @module Cylinder/utils
- * @param {CylinderClass} cylinder - The running Cylinder instance.
- * @param {Object} module - A premade module.
- */
-
 module.exports = function (cylinder, _module) {
 
-	/** @exports Cylinder/utils */
+	/**
+	 * Utilities module for CylinderClass.
+	 * @exports utils
+	 */
 	var module = _.extend({}, _module);
 
 	/**

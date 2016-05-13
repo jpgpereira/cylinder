@@ -1,14 +1,9 @@
-/**
- * DOM management module for CylinderClass.
- *
- * @module Cylinder/dom
- * @param {CylinderClass} cylinder - The running Cylinder instance.
- * @param {Object} module - A premade module.
- */
-
 module.exports = function (cylinder, _module) {
 
-	/** @exports Cylinder/dom */
+	/**
+	 * DOM management module for CylinderClass.
+	 * @exports dom
+	 */
 	var module = _.extend({}, _module);
 
 	// ALL DEPENDENCIES FIRST!
@@ -19,7 +14,7 @@ module.exports = function (cylinder, _module) {
 	/**
 	 * The options taken by the module.
 	 * @type     {Object}
-	 * @property {String} options.title - The app's default title.
+	 * @property {String} title - The app's default title.
 	 */
 	module.options = {
 		title: 'Cylinder'
@@ -84,7 +79,7 @@ module.exports = function (cylinder, _module) {
 		_.each(obj, function (v, k) {
 			var $el = module.$head.find('meta[name="' + k + '"], meta[property="' + k + '"]');
 			if ($el.length < 1) {
-				if (cylinder.debug) console.warn('CYLINDER.DOM: tried to change meta "' + k + '" but it doesn\'t exist');
+				console.warn('CYLINDER.DOM: tried to change meta "' + k + '" but it doesn\'t exist');
 				return;
 			}
 			$el.attr('content', v);
