@@ -12,7 +12,7 @@ Cylinder.controller('docs', function (cl, controller) {
 		if (cl.s.startsWith(href.attr, '#')) {
 			e.preventDefault();
 			e.stopPropagation();
-			var $target = $el.find('[name="' + href.attr.replace('#', '') + '"]');
+			var $target = cl.$container.find('[name="' + href.attr.replace('#', '') + '"]');
 			cl.scroll.go($target);
 		}
 	});
