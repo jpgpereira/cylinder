@@ -12,18 +12,18 @@ Router module for CylinderClass.
     * [.previous_url](#module_router.previous_url) : <code>String</code>
     * [.previous_route](#module_router.previous_route) : <code>String</code>
     * [.reload([delay])](#module_router.reload)
-    * [.setup([domain], [root])](#module_router.setup)
+    * [.setup([domain], [root])](#module_router.setup) ⇒ <code>router</code>
     * [.domain()](#module_router.domain) ⇒ <code>String</code>
     * [.root()](#module_router.root) ⇒ <code>String</code>
     * [.path()](#module_router.path) ⇒ <code>String</code>
-    * [.start([silent])](#module_router.start)
-    * [.stop()](#module_router.stop)
-    * [.go(url, [options], [prefix])](#module_router.go)
+    * [.start([silent])](#module_router.start) ⇒ <code>router</code>
+    * [.stop()](#module_router.stop) ⇒ <code>router</code>
+    * [.go(url, [options], [prefix])](#module_router.go) ⇒ <code>router</code>
     * [.add([name], syntax, ...middleware)](#module_router.add)
-    * [.use(func)](#module_router.use)
-    * [.unuse(func)](#module_router.unuse)
-    * [.addHandler([selector])](#module_router.addHandler)
-    * [.removeHandler([selector])](#module_router.removeHandler)
+    * [.use(func)](#module_router.use) ⇒ <code>router</code>
+    * [.unuse(func)](#module_router.unuse) ⇒ <code>router</code>
+    * [.addHandler([selector])](#module_router.addHandler) ⇒ <code>router</code>
+    * [.removeHandler([selector])](#module_router.removeHandler) ⇒ <code>router</code>
 
 
 * * *
@@ -128,10 +128,11 @@ Reloads the page instantaneously, unless a delay is set.
 
 <a name="module_router.setup"></a>
 
-### router.setup([domain], [root])
+### router.setup([domain], [root]) ⇒ <code>router</code>
 Sets up the domain and root this router will operate on.
 
 **Kind**: static method of <code>[router](#module_router)</code>  
+**Returns**: <code>router</code> - Returns the module itself, to ease chaining.  
 <table>
   <thead>
     <tr>
@@ -180,10 +181,11 @@ Returns the current router's full path (domain + root).
 
 <a name="module_router.start"></a>
 
-### router.start([silent])
+### router.start([silent]) ⇒ <code>router</code>
 Starts the router.It will automatically start processing URL changes.
 
 **Kind**: static method of <code>[router](#module_router)</code>  
+**Returns**: <code>router</code> - Returns the module itself, to ease chaining.  
 <table>
   <thead>
     <tr>
@@ -202,19 +204,21 @@ Starts the router.It will automatically start processing URL changes.
 
 <a name="module_router.stop"></a>
 
-### router.stop()
+### router.stop() ⇒ <code>router</code>
 Stops the router.
 
 **Kind**: static method of <code>[router](#module_router)</code>  
+**Returns**: <code>router</code> - Returns the module itself, to ease chaining.  
 
 * * *
 
 <a name="module_router.go"></a>
 
-### router.go(url, [options], [prefix])
+### router.go(url, [options], [prefix]) ⇒ <code>router</code>
 Changes the current URL to the one specified.<br />If <code>start()</code> wasn't called, then it will change URL location natively instead of going through the router's methods.
 
 **Kind**: static method of <code>[router](#module_router)</code>  
+**Returns**: <code>router</code> - Returns the module itself, to ease chaining.  
 <table>
   <thead>
     <tr>
@@ -267,10 +271,11 @@ Adds a handler to the router.This handler will be triggered every time the URL 
 
 <a name="module_router.use"></a>
 
-### router.use(func)
+### router.use(func) ⇒ <code>router</code>
 Adds a middleware layer to the global router.The provided callback will be executed every time the URL changes.
 
 **Kind**: static method of <code>[router](#module_router)</code>  
+**Returns**: <code>router</code> - Returns the module itself, to ease chaining.  
 <table>
   <thead>
     <tr>
@@ -289,10 +294,11 @@ Adds a middleware layer to the global router.The provided callback will be exec
 
 <a name="module_router.unuse"></a>
 
-### router.unuse(func)
+### router.unuse(func) ⇒ <code>router</code>
 Removes a middleware layer from the global router.You must provide the same callback you provided in <code>add()</code>, otherwise this method will do no good.
 
 **Kind**: static method of <code>[router](#module_router)</code>  
+**Returns**: <code>router</code> - Returns the module itself, to ease chaining.  
 <table>
   <thead>
     <tr>
@@ -311,10 +317,11 @@ Removes a middleware layer from the global router.You must provide the same cal
 
 <a name="module_router.addHandler"></a>
 
-### router.addHandler([selector])
+### router.addHandler([selector]) ⇒ <code>router</code>
 Adds an event handler that will capture all clicks on internal site links, and calls the module's <code>go()</code> method.<br />The default selector will not capture clicks on hyperlinks with the [data-bypass] attribute.
 
 **Kind**: static method of <code>[router](#module_router)</code>  
+**Returns**: <code>router</code> - Returns the module itself, to ease chaining.  
 <table>
   <thead>
     <tr>
@@ -324,7 +331,7 @@ Adds an event handler that will capture all clicks on internal site links, and c
   <tbody>
 <tr>
     <td>[selector]</td><td><code>String</code></td><td><p>Override the default selector provided to jQuery, in order to target custom elements.<br />
-                               If empty, the method will provide the selector from <code>options.selector</code>.</p>
+                              If empty, the method will provide the selector from <code>options.selector</code>.</p>
 </td>
     </tr>  </tbody>
 </table>
@@ -334,10 +341,11 @@ Adds an event handler that will capture all clicks on internal site links, and c
 
 <a name="module_router.removeHandler"></a>
 
-### router.removeHandler([selector])
+### router.removeHandler([selector]) ⇒ <code>router</code>
 Removes the event handler added by <code>addHandler()</code>.
 
 **Kind**: static method of <code>[router](#module_router)</code>  
+**Returns**: <code>router</code> - Returns the module itself, to ease chaining.  
 <table>
   <thead>
     <tr>
@@ -347,7 +355,7 @@ Removes the event handler added by <code>addHandler()</code>.
   <tbody>
 <tr>
     <td>[selector]</td><td><code>String</code></td><td><p>Previously provided selector to override the default one provided to jQuery, in order to target custom elements.<br />
-                               If empty, the method will provide the selector from <code>options.selector</code>.</p>
+                              If empty, the method will provide the selector from <code>options.selector</code>.</p>
 </td>
     </tr>  </tbody>
 </table>

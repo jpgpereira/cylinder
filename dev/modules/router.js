@@ -163,8 +163,9 @@ module.exports = function (cylinder, _module) {
 	/**
 	 * Sets up the domain and root this router will operate on.
 	 *
-	 * @param {String} [domain] - The base domain for this router.
-	 * @param {String} [root]   - The base path (after domain, the immutable part) for this router.
+	 * @param  {String} [domain] - The base domain for this router.
+	 * @param  {String} [root]   - The base path (after domain, the immutable part) for this router.
+	 * @return {router} Returns the module itself, to ease chaining.
 	 */
 	module.setup = function (domain, root) {
 		// reuse current variables!
@@ -193,6 +194,8 @@ module.exports = function (cylinder, _module) {
 		// if the router had already been started,
 		// restart it so that we don't operate on an older domain/path!
 		if (Backbone.History.started) module.start(true);
+
+		return module; // return the module itself.
 	};
 
 	/**
@@ -217,40 +220,48 @@ module.exports = function (cylinder, _module) {
 	 * Starts the router.
 	 * It will automatically start processing URL changes.
 	 *
-	 * @param {Boolean} [silent] - Determines whether the router should fire initial events or not.
+	 * @param  {Boolean} [silent] - Determines whether the router should fire initial events or not.
+	 * @return {router} Returns the module itself, to ease chaining.
 	 */
 	module.start = function (silent) {
 		module.stop(); // stop the router first before doing anything else!
 		Backbone.history.start({ pushState: module.options.push, root: path_root, silent: silent || false });
+		return module; // return the module itself.
 	};
 
 	/**
 	 * Stops the router.
+	 *
+	 * @return {router} Returns the module itself, to ease chaining.
 	 */
 	module.stop = function () {
 		if (Backbone.History.started)
 			Backbone.history.stop();
+		return module; // return the module itself.
 	};
 
 	/**
 	 * Changes the current URL to the one specified.<br />
 	 * If <code>start()</code> wasn't called, then it will change URL location natively instead of going through the router's methods.
 	 *
-	 * @param {String}  url       - The URL to navigate to.
-	 * @param {Boolean} [options] - Options to pass to Backbone.Router's method.
-	 * @param {Boolean} [prefix]  - Should the method include the prefix set in the module's <code>options.prefix</code>?
+	 * @param  {String}  url       - The URL to navigate to.
+	 * @param  {Boolean} [options] - Options to pass to Backbone.Router's method.
+	 * @param  {Boolean} [prefix]  - Should the method include the prefix set in the module's <code>options.prefix</code>?
+	 * @return {router} Returns the module itself, to ease chaining.
 	 */
 	module.go = function (url, options, prefix) {
 		if (!Backbone.History.started) {
 			if (module.options.push) window.location = path_full + url; // change full location!
 			else window.location.hash = '#' + url; // only do it if using hash-navigation!
-			return;
+			return module; // return the module itself.
 		}
 
 		Backbone.history.navigate(
 			(prefix !== false ? module.options.prefix : '') + url,
 			_.extend({}, module.options.navigate_defaults, options)
 		);
+
+		return module; // return the module itself.
 	};
 
 	/**
@@ -305,20 +316,24 @@ module.exports = function (cylinder, _module) {
 	 * Adds a middleware layer to the global router.
 	 * The provided callback will be executed every time the URL changes.
 	 *
-	 * @param {Function} func - The middleware function to add.
+	 * @param  {Function} func - The middleware function to add.
+	 * @return {router} Returns the module itself, to ease chaining.
 	 */
 	module.use = function (func) {
 		middlewares.push(func);
+		return module; // return the module itself.
 	};
 
 	/**
 	 * Removes a middleware layer from the global router.
 	 * You must provide the same callback you provided in <code>add()</code>, otherwise this method will do no good.
 	 *
-	 * @param {Function} func - The middleware function to add.
+	 * @param  {Function} func - The middleware function to add.
+	 * @return {router} Returns the module itself, to ease chaining.
 	 */
 	module.unuse = function (func) {
 		middlewares = _.without(middlewares, func);
+		return module; // return the module itself.
 	};
 
 	// this method will add an event handler that will capture all clicks on internal site links, and call ".navigate".
@@ -327,8 +342,9 @@ module.exports = function (cylinder, _module) {
 	 * Adds an event handler that will capture all clicks on internal site links, and calls the module's <code>go()</code> method.<br />
 	 * The default selector will not capture clicks on hyperlinks with the [data-bypass] attribute.
 	 *
-	 * @param {String} [selector] - Override the default selector provided to jQuery, in order to target custom elements.<br />
-	 *                            	If empty, the method will provide the selector from <code>options.selector</code>.
+	 * @param  {String} [selector] - Override the default selector provided to jQuery, in order to target custom elements.<br />
+	 *                               If empty, the method will provide the selector from <code>options.selector</code>.
+	 * @return {router} Returns the module itself, to ease chaining.
 	 */
 	module.addHandler = function (selector) {
 		var callback = _.last(_.flatten(arguments)); // check for the last argument
@@ -359,16 +375,20 @@ module.exports = function (cylinder, _module) {
 				if (_.isFunction(callback)) callback($this, href);
 			}
 		});
+
+		return module; // return the module itself.
 	};
 
 	/**
 	 * Removes the event handler added by <code>addHandler()</code>.
 	 *
-	 * @param {String} [selector] - Previously provided selector to override the default one provided to jQuery, in order to target custom elements.<br />
-	 *                            	If empty, the method will provide the selector from <code>options.selector</code>.
+	 * @param  {String} [selector] - Previously provided selector to override the default one provided to jQuery, in order to target custom elements.<br />
+	 *                               If empty, the method will provide the selector from <code>options.selector</code>.
+	 * @return {router} Returns the module itself, to ease chaining.
 	 */
 	module.removeHandler = function (selector) {
 		cylinder.dom.$document.off('click.clrouter', _.isString(selector) && !cylinder.s.isBlank(selector) ? selector : module.options.selector);
+		return module; // return the module itself.
 	};
 
 	// run the setup at least once
