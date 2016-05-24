@@ -183,24 +183,28 @@ function CylinderClass () {
 	 *
 	 * Cylinder.mymodule.alert('hello!');
 	 */
-	this.module = function (name, func) {
+	this.module = function (name, ctor) {
 		// check if we have a name and if it is a string!
 		// if the name is blank, then forget about it and throw error!
 		if (!_.isString(name) || (/^\s*$/).test(name)) throw new CylinderException('Trying to add a nameless module!');
 
-		// check if func is null, cause it's probably just trying to return the module!
+		// check if ctor is null, cause it's probably just trying to return the module!
 		// if so, check if the module exists, and return it!
-		if (_.isUndefined(func) || _.isNull(func)) {
+		if (_.isUndefined(ctor) || _.isNull(ctor)) {
 			if (initialized && _.has(modules, name)) return instance[name];
 			return null;
 		}
 
-		modules[name] = func; // add module to cache
+		modules[name] = ctor; // add module to cache
 		if (!initialized) return instance; // return the framework instance!
 
-		var obj = {}; // the final object to extend with the framework.
 		var module = {}; // the module object itself, might have methods and properties.
-		var result = obj[name] = typeof func == 'function' ? func(instance, module) : _.extend(module, func); // initialize module...
+		var result = typeof ctor == 'function' // initialize module... (check if function or object)
+			? ctor(instance, module) // run constructor
+			: ctor; // it's an object, so just extend it
+
+		var obj = {}; // the final object to extend with the framework.
+		obj[name] = _.extend(module, result || {}); // apply to the instance...
 		instance.extend(obj, true, false); // add it to the framework...
 		instance.trigger('module', name, result); // trigger an event for when extended...
 		return obj; // and return the module itself!

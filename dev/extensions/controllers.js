@@ -49,20 +49,24 @@ module.exports = function (instance) {
 		if (!_.isString(name) || instance.s.isBlank(name)) throw new CylinderException('Trying to add a nameless controller!');
 
 		// check if ctor is null, cause it's probably just trying to return the controller!
-		// if so, check if the module exists, and return it!
+		// if so, check if the controller exists, and return it!
 		if (_.isUndefined(ctor) || _.isNull(ctor)) {
 			if (initialized && _.has(controllers, name)) return controllers[name].instance;
 			return null;
 		}
 
-		controllers[name] = { constructor: ctor, instance: {} }; // add module to cache
+		controllers[name] = { constructor: ctor, instance: {} }; // add controller to cache
 		if (!initialized) return controllers[name].instance; // return the framework instance!
 
-		controllers[name].instance = typeof ctor == 'function' // initialize controller...
-			? ctor(instance, controllers[name].instance) // run constructor
-			: _.extend(controllers[name].instance, ctor); // it's an object, so just extend it
-		instance.trigger('controller', name, controllers[name].instance); // trigger an event for when extended...
-		return controllers[name].instance; // and return the module itself!
+		var controller = controllers[name].instance; // pre-initialize controller...
+		var result = typeof ctor == 'function' // initialize controller... (check if function or object)
+			? ctor(instance, controller) // run constructor
+			: ctor; // it's an object, so just extend it
+
+		controller = _.extend(controller, result || {}); // extend the instance with the constructor results...
+		controllers[name].instance = controller; // apply to the instance...
+		instance.trigger('controller', name, controller); // trigger an event for when extended...
+		return controller; // and return the controller itself!
 	};
 
 	/**
