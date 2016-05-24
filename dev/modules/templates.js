@@ -234,7 +234,7 @@ module.exports = function (cylinder, _module) {
 	module.render = function (id, options, partials) {
 		var template = module.get(id);
 		var result = Mustache.render(
-			template.html || '!! Template "' + id + '" not found !!',
+			(template || { html: '!! Template "' + id + '" not found !!' }).html,
 			_.extend({}, module.defaults, template.defaults, options),
 			_.extend({}, cache_partials, template.partials, partials)
 		);
