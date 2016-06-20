@@ -28,9 +28,11 @@ The options taken by the module.
   </thead>
   <tbody>
 <tr>
-    <td>debug</td><td><code>Boolean</code></td><td>If true, requests won't be sent.</td>
+    <td>debug</td><td><code>Boolean</code></td><td><p>If true, requests won&#39;t be sent.</p>
+</td>
     </tr><tr>
-    <td>log</td><td><code>Boolean</code></td><td>Should the module log into the console?</td>
+    <td>log</td><td><code>Boolean</code></td><td><p>Should the module log into the console?</p>
+</td>
     </tr>  </tbody>
 </table>
 

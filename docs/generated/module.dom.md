@@ -33,7 +33,8 @@ The options taken by the module.
   </thead>
   <tbody>
 <tr>
-    <td>title</td><td><code>String</code></td><td>The app's default title.</td>
+    <td>title</td><td><code>String</code></td><td><p>The app&#39;s default title.</p>
+</td>
     </tr>  </tbody>
 </table>
 
