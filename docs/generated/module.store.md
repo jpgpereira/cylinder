@@ -31,11 +31,14 @@ Default model that can and should be used to create new data models.<br />The m
   </thead>
   <tbody>
 <tr>
-    <td>Model.fetch</td><td><code>function</code></td><td>Loads properties onto the model. The module does not call this method automatically.</td>
+    <td>Model.fetch</td><td><code>function</code></td><td><p>Loads properties onto the model. The module does not call this method automatically.</p>
+</td>
     </tr><tr>
-    <td>Model.save</td><td><code>function</code></td><td>Saves properties from the model using your method of choice.</td>
+    <td>Model.save</td><td><code>function</code></td><td><p>Saves properties from the model using your method of choice.</p>
+</td>
     </tr><tr>
-    <td>Model.destroy</td><td><code>function</code></td><td>Should be used to completely destroy a model. Use at your discretion.</td>
+    <td>Model.destroy</td><td><code>function</code></td><td><p>Should be used to completely destroy a model. Use at your discretion.</p>
+</td>
     </tr>  </tbody>
 </table>
 

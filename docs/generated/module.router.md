@@ -44,15 +44,22 @@ The options taken by the module.
   </thead>
   <tbody>
 <tr>
-    <td>push</td><td><code>Boolean</code></td><td>If true, the module will attempt to use HTML5's pushState.<br />                                See <a href="http://backbonejs.org/#History" target="_blank">http://backbonejs.org/#History</a>                                for more details about how pushState works.</td>
+    <td>push</td><td><code>Boolean</code></td><td><p>If true, the module will attempt to use HTML5&#39;s pushState.<br />
+                               See <a href="http://backbonejs.org/#History" target="_blank">http://backbonejs.org/#History</a>
+                               for more details about how pushState works.</p>
+</td>
     </tr><tr>
-    <td>clicks</td><td><code>Boolean</code></td><td>If false, clicking on a link covered by <code>addHandler()</code> will bypass the module's default behaviour.</td>
+    <td>clicks</td><td><code>Boolean</code></td><td><p>If false, clicking on a link covered by <code>addHandler()</code> will bypass the module&#39;s default behaviour.</p>
+</td>
     </tr><tr>
-    <td>prefix</td><td><code>Boolean</code></td><td>Sets up a prefix for all links.</td>
+    <td>prefix</td><td><code>Boolean</code></td><td><p>Sets up a prefix for all links.</p>
+</td>
     </tr><tr>
-    <td>selector</td><td><code>Boolean</code></td><td>The default element selector for the click handler given by <code>addHandler()</code>.</td>
+    <td>selector</td><td><code>Boolean</code></td><td><p>The default element selector for the click handler given by <code>addHandler()</code>.</p>
+</td>
     </tr><tr>
-    <td>navigate_defaults</td><td><code>Boolean</code></td><td>Allows for default properties to be passed to the module's internal Backbone.Router on <code>go()</code>.</td>
+    <td>navigate_defaults</td><td><code>Boolean</code></td><td><p>Allows for default properties to be passed to the module&#39;s internal Backbone.Router on <code>go()</code>.</p>
+</td>
     </tr>  </tbody>
 </table>
 

@@ -1,5 +1,5 @@
 /*
- * cylinder v0.11.2 (2016-05-18 13:51:01)
+ * cylinder v0.12.0 (2016-06-20 15:33:38)
  * @author Luís Soares <luis.soares@comon.pt>
  */
 
@@ -20,7 +20,7 @@ function CylinderClass () {
 	 * Framework version.
 	 * @return {String}
 	 */
-	this.version = '0.11.2';
+	this.version = '0.12.0';
 
 	/**
 	 * Checks if the framework has been initialized.
@@ -70,9 +70,12 @@ function CylinderClass () {
 	 * }
 	 */
 	this.dependency = function () {
-		var args = arguments; // make a copy of all received arguments!
-		var loud = !_.isBoolean(_.last(args)); // if the last argument is not a boolean, throw exception!
-		if (!loud) args = _.initial(args); // if the last argument IS a boolean, remove it from the arguments!
+		var args = Array.prototype.slice.call(arguments); // make a copy of all received arguments!
+		var loud = true; // this will make sure it will either throw an exception or just output a boolean.
+		if (args.length > 0 && typeof args[args.length - 1] === 'boolean') {
+			loud = !args[args.length - 1]; // the last argument IS a boolean, so store its value.
+			args.pop(); // in order to not have trash in our checks, remove the last argument!
+		}
 
 		for (var i = 0; i < args.length; i++) {
 			var dependency = args[i];
@@ -84,7 +87,7 @@ function CylinderClass () {
 			var tree = ('' + (dependency_object ? dependency.package : dependency)).split('.'); // split by dot
 
 			// don't forget that any argument can be recursive,
-			// for example, "_.str", so we have to drill down!
+			// for example, "$.fn.velocity", so we have to drill down!
 			for (var j = 0; j < tree.length; j++) { // drill
 				var dependency = tree[j];
 				var exists = Object.prototype.hasOwnProperty.call(scope, dependency);
@@ -137,7 +140,7 @@ function CylinderClass () {
 	// We'll mix in the underscore and underscore.string modules,
 	// so that we don't have to mess with external files.
 	// We'll also add event handling to Cylinder.
-	_.extend(_, { str: this.s }); // add _.str to _
+	_.extend(this._, { str: this.s }); // add underscore.string to underscore
 	_.extend(this, Backbone.Events); // add events
 
 	/**
@@ -190,24 +193,28 @@ function CylinderClass () {
 	 *
 	 * Cylinder.mymodule.alert('hello!');
 	 */
-	this.module = function (name, func) {
+	this.module = function (name, ctor) {
 		// check if we have a name and if it is a string!
 		// if the name is blank, then forget about it and throw error!
 		if (!_.isString(name) || (/^\s*$/).test(name)) throw new CylinderException('Trying to add a nameless module!');
 
-		// check if func is null, cause it's probably just trying to return the module!
+		// check if ctor is null, cause it's probably just trying to return the module!
 		// if so, check if the module exists, and return it!
-		if (_.isUndefined(func) || _.isNull(func)) {
+		if (_.isUndefined(ctor) || _.isNull(ctor)) {
 			if (initialized && _.has(modules, name)) return instance[name];
 			return null;
 		}
 
-		modules[name] = func; // add module to cache
+		modules[name] = ctor; // add module to cache
 		if (!initialized) return instance; // return the framework instance!
 
-		var obj = {}; // the final object to extend with the framework.
 		var module = {}; // the module object itself, might have methods and properties.
-		var result = obj[name] = typeof func == 'function' ? func(instance, module) : _.extend(module, func); // initialize module...
+		var result = typeof ctor == 'function' // initialize module... (check if function or object)
+			? ctor(instance, module) // run constructor
+			: ctor; // it's an object, so just extend it
+
+		var obj = {}; // the final object to extend with the framework.
+		obj[name] = _.extend(module, result || {}); // apply to the instance...
 		instance.extend(obj, true, false); // add it to the framework...
 		instance.trigger('module', name, result); // trigger an event for when extended...
 		return obj; // and return the module itself!
@@ -360,20 +367,24 @@ module.exports = function (instance) {
 		if (!_.isString(name) || instance.s.isBlank(name)) throw new CylinderException('Trying to add a nameless controller!');
 
 		// check if ctor is null, cause it's probably just trying to return the controller!
-		// if so, check if the module exists, and return it!
+		// if so, check if the controller exists, and return it!
 		if (_.isUndefined(ctor) || _.isNull(ctor)) {
 			if (initialized && _.has(controllers, name)) return controllers[name].instance;
 			return null;
 		}
 
-		controllers[name] = { constructor: ctor, instance: {} }; // add module to cache
+		controllers[name] = { constructor: ctor, instance: {} }; // add controller to cache
 		if (!initialized) return controllers[name].instance; // return the framework instance!
 
-		controllers[name].instance = typeof ctor == 'function' // initialize controller...
-			? ctor(instance, controllers[name].instance) // run constructor
-			: _.extend(controllers[name].instance, ctor); // it's an object, so just extend it
-		instance.trigger('controller', name, controllers[name].instance); // trigger an event for when extended...
-		return controllers[name].instance; // and return the module itself!
+		var controller = controllers[name].instance; // pre-initialize controller...
+		var result = typeof ctor == 'function' // initialize controller... (check if function or object)
+			? ctor(instance, controller) // run constructor
+			: ctor; // it's an object, so just extend it
+
+		controller = _.extend(controller, result || {}); // extend the instance with the constructor results...
+		controllers[name].instance = controller; // apply to the instance...
+		instance.trigger('controller', name, controller); // trigger an event for when extended...
+		return controller; // and return the controller itself!
 	};
 
 	/**
@@ -1938,7 +1949,7 @@ module.exports = function (cylinder, _module) {
 	module.render = function (id, options, partials) {
 		var template = module.get(id);
 		var result = Mustache.render(
-			template.html || '!! Template "' + id + '" not found !!',
+			(template || { html: '!! Template "' + id + '" not found !!' }).html,
 			_.extend({}, module.defaults, template.defaults, options),
 			_.extend({}, cache_partials, template.partials, partials)
 		);
@@ -2069,7 +2080,7 @@ module.exports = function (cylinder, _module) {
 
 		// get the id and check against cache
 		var id = $el.data('template-id');
-		if (!_.str.isBlank(id) && _.has(cache_replaced, id)) {
+		if (!cl.s.isBlank(id) && _.has(cache_replaced, id)) {
 			template = cache_replaced[id]; // get the HTML from cache
 		}
 		else {

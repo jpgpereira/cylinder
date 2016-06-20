@@ -234,7 +234,7 @@ module.exports = function (cylinder, _module) {
 	module.render = function (id, options, partials) {
 		var template = module.get(id);
 		var result = Mustache.render(
-			template.html || '!! Template "' + id + '" not found !!',
+			(template || { html: '!! Template "' + id + '" not found !!' }).html,
 			_.extend({}, module.defaults, template.defaults, options),
 			_.extend({}, cache_partials, template.partials, partials)
 		);
@@ -365,7 +365,7 @@ module.exports = function (cylinder, _module) {
 
 		// get the id and check against cache
 		var id = $el.data('template-id');
-		if (!_.str.isBlank(id) && _.has(cache_replaced, id)) {
+		if (!cl.s.isBlank(id) && _.has(cache_replaced, id)) {
 			template = cache_replaced[id]; // get the HTML from cache
 		}
 		else {

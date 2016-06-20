@@ -63,9 +63,12 @@ function CylinderClass () {
 	 * }
 	 */
 	this.dependency = function () {
-		var args = arguments; // make a copy of all received arguments!
-		var loud = !_.isBoolean(_.last(args)); // if the last argument is not a boolean, throw exception!
-		if (!loud) args = _.initial(args); // if the last argument IS a boolean, remove it from the arguments!
+		var args = Array.prototype.slice.call(arguments); // make a copy of all received arguments!
+		var loud = true; // this will make sure it will either throw an exception or just output a boolean.
+		if (args.length > 0 && typeof args[args.length - 1] === 'boolean') {
+			loud = !args[args.length - 1]; // the last argument IS a boolean, so store its value.
+			args.pop(); // in order to not have trash in our checks, remove the last argument!
+		}
 
 		for (var i = 0; i < args.length; i++) {
 			var dependency = args[i];
@@ -77,7 +80,7 @@ function CylinderClass () {
 			var tree = ('' + (dependency_object ? dependency.package : dependency)).split('.'); // split by dot
 
 			// don't forget that any argument can be recursive,
-			// for example, "_.str", so we have to drill down!
+			// for example, "$.fn.velocity", so we have to drill down!
 			for (var j = 0; j < tree.length; j++) { // drill
 				var dependency = tree[j];
 				var exists = Object.prototype.hasOwnProperty.call(scope, dependency);
@@ -130,7 +133,7 @@ function CylinderClass () {
 	// We'll mix in the underscore and underscore.string modules,
 	// so that we don't have to mess with external files.
 	// We'll also add event handling to Cylinder.
-	_.extend(_, { str: this.s }); // add _.str to _
+	_.extend(this._, { str: this.s }); // add underscore.string to underscore
 	_.extend(this, Backbone.Events); // add events
 
 	/**
@@ -183,24 +186,28 @@ function CylinderClass () {
 	 *
 	 * Cylinder.mymodule.alert('hello!');
 	 */
-	this.module = function (name, func) {
+	this.module = function (name, ctor) {
 		// check if we have a name and if it is a string!
 		// if the name is blank, then forget about it and throw error!
 		if (!_.isString(name) || (/^\s*$/).test(name)) throw new CylinderException('Trying to add a nameless module!');
 
-		// check if func is null, cause it's probably just trying to return the module!
+		// check if ctor is null, cause it's probably just trying to return the module!
 		// if so, check if the module exists, and return it!
-		if (_.isUndefined(func) || _.isNull(func)) {
+		if (_.isUndefined(ctor) || _.isNull(ctor)) {
 			if (initialized && _.has(modules, name)) return instance[name];
 			return null;
 		}
 
-		modules[name] = func; // add module to cache
+		modules[name] = ctor; // add module to cache
 		if (!initialized) return instance; // return the framework instance!
 
-		var obj = {}; // the final object to extend with the framework.
 		var module = {}; // the module object itself, might have methods and properties.
-		var result = obj[name] = typeof func == 'function' ? func(instance, module) : _.extend(module, func); // initialize module...
+		var result = typeof ctor == 'function' // initialize module... (check if function or object)
+			? ctor(instance, module) // run constructor
+			: ctor; // it's an object, so just extend it
+
+		var obj = {}; // the final object to extend with the framework.
+		obj[name] = _.extend(module, result || {}); // apply to the instance...
 		instance.extend(obj, true, false); // add it to the framework...
 		instance.trigger('module', name, result); // trigger an event for when extended...
 		return obj; // and return the module itself!

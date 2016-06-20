@@ -34,19 +34,26 @@ The options taken by the module.
   </thead>
   <tbody>
 <tr>
-    <td>load</td><td><code>Boolean</code></td><td>If true, the module will try to load templates automatically.</td>
+    <td>load</td><td><code>Boolean</code></td><td><p>If true, the module will try to load templates automatically.</p>
+</td>
     </tr><tr>
-    <td>load_cache</td><td><code>Boolean</code></td><td>If true, the browser will cache any remotely-fetched templates.</td>
+    <td>load_cache</td><td><code>Boolean</code></td><td><p>If true, the browser will cache any remotely-fetched templates.</p>
+</td>
     </tr><tr>
-    <td>load_base_path</td><td><code>Boolean</code></td><td>Remote template base path.</td>
+    <td>load_base_path</td><td><code>Boolean</code></td><td><p>Remote template base path.</p>
+</td>
     </tr><tr>
-    <td>load_extension</td><td><code>Boolean</code></td><td>Remote template file extension.</td>
+    <td>load_extension</td><td><code>Boolean</code></td><td><p>Remote template file extension.</p>
+</td>
     </tr><tr>
-    <td>fire_events</td><td><code>Boolean</code></td><td>Fires all events when rendering or doing other things.</td>
+    <td>fire_events</td><td><code>Boolean</code></td><td><p>Fires all events when rendering or doing other things.</p>
+</td>
     </tr><tr>
-    <td>partials</td><td><code>Boolean</code></td><td>All templates will always be available as partials.</td>
+    <td>partials</td><td><code>Boolean</code></td><td><p>All templates will always be available as partials.</p>
+</td>
     </tr><tr>
-    <td>premades</td><td><code>String</code> | <code>Boolean</code></td><td>If not false, the module will look for a specific object variable for templates (default: JST).</td>
+    <td>premades</td><td><code>String</code> | <code>Boolean</code></td><td><p>If not false, the module will look for a specific object variable for templates (default: JST).</p>
+</td>
     </tr>  </tbody>
 </table>
 
