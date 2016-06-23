@@ -117,7 +117,7 @@ module.exports = function (cylinder, _module) {
 			return template; // and return the template!
 		}
 
-		return {}; // template wasn't found!
+		return null; // template wasn't found!
 	};
 
 	/**
