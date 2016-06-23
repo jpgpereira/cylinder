@@ -1,5 +1,5 @@
 /*
- * cylinder v0.12.0 (2016-06-20 15:33:38)
+ * cylinder v0.12.1 (2016-06-23 12:10:38)
  * @author Luís Soares <luis.soares@comon.pt>
  */
 
@@ -20,7 +20,7 @@ function CylinderClass () {
 	 * Framework version.
 	 * @return {String}
 	 */
-	this.version = '0.12.0';
+	this.version = '0.12.1';
 
 	/**
 	 * Checks if the framework has been initialized.
@@ -1832,7 +1832,7 @@ module.exports = function (cylinder, _module) {
 			return template; // and return the template!
 		}
 
-		return {}; // template wasn't found!
+		return null; // template wasn't found!
 	};
 
 	/**
@@ -1947,14 +1947,14 @@ module.exports = function (cylinder, _module) {
 	 * @return {String} Returns the rendered template.
 	 */
 	module.render = function (id, options, partials) {
-		var template = module.get(id);
+		var template = module.get(id) || { error: true, html: '!! Template "' + id + '" not found !!' };
 		var result = Mustache.render(
-			(template || { html: '!! Template "' + id + '" not found !!' }).html,
+			template.html,
 			_.extend({}, module.defaults, template.defaults, options),
 			_.extend({}, cache_partials, template.partials, partials)
 		);
 
-		if (module.options.fire_events) {
+		if (module.options.fire_events && !template.error) {
 			var parts = id.split('/');
 			cylinder.trigger('render', id, options, partials); // trigger the generic event...
 			_.reduce(parts, function (memo, part) {
