@@ -1,5 +1,5 @@
 /*
- * cylinder v0.12.1 (2016-06-23 12:10:38)
+ * cylinder v0.12.2 (2016-07-05 10:46:09)
  * @author Luís Soares <luis.soares@comon.pt>
  */
 
@@ -20,7 +20,7 @@ function CylinderClass () {
 	 * Framework version.
 	 * @return {String}
 	 */
-	this.version = '0.12.1';
+	this.version = '0.12.2';
 
 	/**
 	 * Checks if the framework has been initialized.
@@ -943,12 +943,22 @@ module.exports = function (cylinder, _module) {
 					module.route = name; // set the current route...
 
 					module.previous_url = module.url; // save the previous url...
-					module.url = (module.options.push)
+					module.url = (module.options.push) // set the new url...
 						? Backbone.history.location.pathname.replace(path_root, '')
 						: Backbone.history.location.hash.replace('!', '').replace('#', '');
 
-					cylinder.trigger('route', name, args); // trigger an event for the framework...
-					module.done = true; // signal the module that a route has been triggered...
+					// events for the previous route
+					if (module.previous_route) {
+						cylinder.trigger('routeout:' + module.previous_route, name, args); // trigger a specific event for the framework...
+						cylinder.trigger('routeout', module.previous_route, name, args); // trigger a global event for the framework...
+					}
+
+					// events for the new route
+					cylinder.trigger('route:' + name, args); // trigger a specific event for the framework...
+					cylinder.trigger('route', name, args); // trigger a global event for the framework...
+
+					// signal the module that a route has been triggered...
+					module.done = true;
 
 					if (callback) callback.apply(router, args); // ...and finished!
 				});
