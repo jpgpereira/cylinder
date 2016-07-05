@@ -48,6 +48,12 @@ module.exports = function (cylinder, _module) {
 	module.route = null;
 
 	/**
+	 * Current route arguments.
+	 * @type {Array}
+	 */
+	module.args = null;
+
+	/**
 	 * Previous router URL.
 	 * @type {String}
 	 */
@@ -58,6 +64,12 @@ module.exports = function (cylinder, _module) {
 	 * @type {String}
 	 */
 	module.previous_route = null;
+
+	/**
+	 * Previous route arguments.
+	 * @type {Array}
+	 */
+	module.previous_args = null;
 
 	var routes = {}; // this will contain all routes and middleware!
 	var middlewares = []; // this will contain all global middleware that is ALWAYS executed on route change!
@@ -104,7 +116,9 @@ module.exports = function (cylinder, _module) {
 		);
 	};
 
-	var cylinder_router = Backbone.Router.extend({
+	// this will be the router itself!
+	// it will manage all routes and even callbacks!
+	var obj = new (Backbone.Router.extend({
 		// this custom method will check its name,
 		// and execute any middleware before doing the final callback!
 		execute: function (callback, args, name) {
@@ -122,15 +136,23 @@ module.exports = function (cylinder, _module) {
 					module.previous_route = module.route; // save the previous route...
 					module.route = name; // set the current route...
 
+					module.previous_args = module.args; // save the previous arguments...
+					module.args = args; // set the current arguments...
+
 					module.previous_url = module.url; // save the previous url...
 					module.url = (module.options.push) // set the new url...
 						? Backbone.history.location.pathname.replace(path_root, '')
 						: Backbone.history.location.hash.replace('!', '').replace('#', '');
 
-					// events for the previous route
 					if (module.previous_route) {
-						cylinder.trigger('routeout:' + module.previous_route, name, args); // trigger a specific event for the framework...
-						cylinder.trigger('routeout', module.previous_route, name, args); // trigger a global event for the framework...
+						// events for the previous route
+						cylinder.trigger('routeout:' + module.previous_route, module.previous_args); // trigger a specific event for the framework...
+						cylinder.trigger('routeout', module.previous_route, module.previous_args); // trigger a global event for the framework...
+
+						// events for the route change
+						cylinder.trigger('routechange:' + module.previous_route + ':' + name, module.previous_args, args); // trigger specific event 1 for the framework...
+						cylinder.trigger('routechange:' + module.previous_route, module.previous_args, name, args); // trigger specific event 2 for the framework...
+						cylinder.trigger('routechange', module.previous_route, module.previous_args, name, args); // trigger a global event for the framework...
 					}
 
 					// events for the new route
@@ -144,11 +166,7 @@ module.exports = function (cylinder, _module) {
 				});
 			});
 		}
-	});
-
-	// this will be the router itself!
-	// it will manage all routes and even callbacks!
-	var obj = new cylinder_router;
+	}))();
 
 	var reload_timeout = null;
 
