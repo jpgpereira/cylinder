@@ -9,8 +9,10 @@ Router module for CylinderClass.
     * [.done](#module_router.done) : <code>Boolean</code>
     * [.url](#module_router.url) : <code>String</code>
     * [.route](#module_router.route) : <code>String</code>
+    * [.args](#module_router.args) : <code>Array</code>
     * [.previous_url](#module_router.previous_url) : <code>String</code>
     * [.previous_route](#module_router.previous_route) : <code>String</code>
+    * [.previous_args](#module_router.previous_args) : <code>Array</code>
     * [.reload([delay])](#module_router.reload)
     * [.setup([domain], [root])](#module_router.setup) ⇒ <code>router</code>
     * [.domain()](#module_router.domain) ⇒ <code>String</code>
@@ -93,6 +95,15 @@ Current route name.
 
 * * *
 
+<a name="module_router.args"></a>
+
+### router.args : <code>Array</code>
+Current route arguments.
+
+**Kind**: static property of <code>[router](#module_router)</code>  
+
+* * *
+
 <a name="module_router.previous_url"></a>
 
 ### router.previous_url : <code>String</code>
@@ -106,6 +117,15 @@ Previous router URL.
 
 ### router.previous_route : <code>String</code>
 Previous route name.
+
+**Kind**: static property of <code>[router](#module_router)</code>  
+
+* * *
+
+<a name="module_router.previous_args"></a>
+
+### router.previous_args : <code>Array</code>
+Previous route arguments.
 
 **Kind**: static property of <code>[router](#module_router)</code>  
 
