@@ -1,5 +1,5 @@
 /*
- * cylinder v0.12.3 (2016-07-05 12:14:12)
+ * cylinder v0.12.4 (2016-07-08 11:59:09)
  * @author Luís Soares <luis.soares@comon.pt>
  */
 
@@ -20,7 +20,7 @@ function CylinderClass () {
 	 * Framework version.
 	 * @return {String}
 	 */
-	this.version = '0.12.3';
+	this.version = '0.12.4';
 
 	/**
 	 * Checks if the framework has been initialized.
@@ -212,12 +212,13 @@ function CylinderClass () {
 		var result = typeof ctor == 'function' // initialize module... (check if function or object)
 			? ctor(instance, module) // run constructor
 			: ctor; // it's an object, so just extend it
+		if (!result) result = module; // if it's falsy, then use the variable passed to the constructor
 
 		var obj = {}; // the final object to extend with the framework.
 		obj[name] = result; // apply to the instance...
 		instance.extend(obj, true, false); // add it to the framework...
 		instance.trigger('module', name, result); // trigger an event for when extended...
-		return obj; // and return the module itself!
+		return result; // and return the module itself!
 	};
 
 	/**
@@ -380,11 +381,11 @@ module.exports = function (instance) {
 		var result = typeof ctor == 'function' // initialize controller... (check if function or object)
 			? ctor(instance, controller) // run constructor
 			: ctor; // it's an object, so just extend it
+		if (!result) result = controller; // if it's falsy, then use the variable passed to the constructor
 
-		controller = _.extend(controller, result || {}); // extend the instance with the constructor results...
-		controllers[name].instance = controller; // apply to the instance...
-		instance.trigger('controller', name, controller); // trigger an event for when extended...
-		return controller; // and return the controller itself!
+		controllers[name].instance = result; // apply to the instance...
+		instance.trigger('controller', name, result); // trigger an event for when extended...
+		return result; // and return the controller itself!
 	};
 
 	/**
