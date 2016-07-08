@@ -205,12 +205,13 @@ function CylinderClass () {
 		var result = typeof ctor == 'function' // initialize module... (check if function or object)
 			? ctor(instance, module) // run constructor
 			: ctor; // it's an object, so just extend it
+		if (!result) result = module; // if it's falsy, then use the variable passed to the constructor
 
 		var obj = {}; // the final object to extend with the framework.
 		obj[name] = result; // apply to the instance...
 		instance.extend(obj, true, false); // add it to the framework...
 		instance.trigger('module', name, result); // trigger an event for when extended...
-		return obj; // and return the module itself!
+		return result; // and return the module itself!
 	};
 
 	/**
