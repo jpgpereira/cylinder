@@ -5,7 +5,7 @@
 	scope.CylinderException = require('./core/exception');
 
 	// include extension/module classes
-	scope.CylinderClass.ExtensionControllers = require('./extensions/controllers')
+	scope.CylinderClass.ExtensionControllers = require('./extensions/controllers');
 	scope.CylinderClass.ModuleUtils = require('./modules/utils');
 	scope.CylinderClass.ModuleDom = require('./modules/dom');
 	scope.CylinderClass.ModuleStore = require('./modules/store');

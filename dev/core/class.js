@@ -210,7 +210,8 @@ function CylinderClass () {
 		var obj = {}; // the final object to extend with the framework.
 		obj[name] = result; // apply to the instance...
 		instance.extend(obj, true, false); // add it to the framework...
-		instance.trigger('module', name, result); // trigger an event for when extended...
+		instance.trigger('module', name, result); // trigger a global event for when extended...
+		instance.trigger('module:' + name, result); // trigger a specific event for when extended...
 		return result; // and return the module itself!
 	};
 
@@ -225,7 +226,8 @@ function CylinderClass () {
 	};
 
 	/**
-	 * Properly initializes the framework and all of the extensions and modules added to it.<br />
+	 * Properly initializes the framework and all of the modules and extensions added to it.<br />
+	 * Keep in mind that modules will be initialized before any extensions whose <code>extendOnInit</code> property is true.<br />
 	 * This method is based on jQuery's <code>$(document).ready()</code> shorthand.
 	 *
 	 * @param  {Function} [callback] - Function to run after initialization.
@@ -244,16 +246,16 @@ function CylinderClass () {
 		initialized = true; // tell the framework that we're set up and ready to go!
 
 		instance.$(function () {
-			// runs through each initializable extension
-			// and finally initializes it!
-			_.each(extensions, function (func) {
-				instance.extend(func);
-			});
-
 			// runs through each module
 			// and initializes it again!
 			_.each(modules, function (func, name) {
 				instance.module(name, func);
+			});
+
+			// runs through each initializable extension
+			// and finally initializes it!
+			_.each(extensions, function (func) {
+				instance.extend(func);
 			});
 
 			// run callback, if it's a method!

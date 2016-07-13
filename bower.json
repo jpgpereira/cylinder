@@ -27,11 +27,11 @@
     "tests"
   ],
   "dependencies": {
-    "jquery": "^3.0.0",
+    "jquery": "^3.1.0",
     "underscore": "^1.8.3",
     "underscore.string": "^3.3.4",
     "backbone": "^1.3.3",
-    "async": "^1.5.2",
-    "mustache.js": "mustache#^2.2.1"
+    "async": "^2.0.0",
+    "mustache.js": "^2.2.1"
   }
 }
