@@ -182,7 +182,7 @@ Returns a list of existing modules.
 <a name="CylinderClass+init"></a>
 
 ### cylinderClass.init([callback]) ⇒ <code>[CylinderClass](#CylinderClass)</code>
-Properly initializes the framework and all of the extensions and modules added to it.<br />This method is based on jQuery's <code>$(document).ready()</code> shorthand.
+Properly initializes the framework and all of the modules and extensions added to it.<br />Keep in mind that modules will be initialized before any extensions whose <code>extendOnInit</code> property is true.<br />This method is based on jQuery's <code>$(document).ready()</code> shorthand.
 
 **Kind**: instance method of <code>[CylinderClass](#CylinderClass)</code>  
 **Returns**: <code>[CylinderClass](#CylinderClass)</code> - Returns the instance itself.  
