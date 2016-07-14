@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * @exports CylinderControllers
  * @augments CylinderClass

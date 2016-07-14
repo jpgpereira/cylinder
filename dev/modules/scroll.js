@@ -1,3 +1,5 @@
+'use strict';
+
 module.exports = function (cylinder, _module) {
 
 	// ALL DEPENDENCIES FIRST!
