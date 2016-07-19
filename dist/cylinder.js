@@ -1,5 +1,5 @@
 /*
- * cylinder v0.13.1 (2016-07-19 15:10:29)
+ * cylinder v0.13.1 (2016-07-19 15:32:28)
  * @author Luís Soares <luis.soares@comon.pt>
  */
 
@@ -2094,21 +2094,23 @@ module.exports = function (cylinder, _module) {
 		if ($el === null || $el.length == 0)
 			throw new CylinderException('Trying to apply a template to an empty or unknown jQuery element.');
 
-		var ev = function () {
+		var ev = function (name) {
 			// this will trigger events
 			// so the developer can do interesting stuff!
-			if (module.options.fire_events) {
-				var parts = id.split('/');
-				_.reduce(parts, function (memo, part) {
-					// trigger specific events...
-					// we'll do this based on namespace, for ease of programming!
-					memo = cylinder.s.trim(memo + '/' + part, '/');
-					cylinder.trigger('apply:' + memo, $el, id, options, partials);
-					return memo;
-				}, '');
-				cylinder.trigger('apply', $el, id, options, partials); // and then trigger the generic event!
-			}
+			var str = cylinder.s.trim(id, '/');
+			var parts = str.split('/');
+			_.reduceRight(parts, function (memo, part) {
+				// trigger specific events...
+				// we'll do this based on namespace, for ease of programming!
+				cylinder.trigger(name + ':' + memo, $el, id, options, partials);
+				memo = cylinder.s(memo).replace(part, '').trim('/').value();
+				return memo;
+			}, str);
+			cylinder.trigger(name, $el, id, options, partials); // and then trigger the generic event!
 		};
+
+		// call "before" events, before applying...
+		if (module.options.fire_events) ev('beforeapply');
 
 		if (module.options.load) {
 			// asynchronous loading is enabled,
@@ -2122,7 +2124,7 @@ module.exports = function (cylinder, _module) {
 					detachAllChildrenFromElement($el); // detach every children first so we don't lose any events...
 					$el.html(module.render(id, options, partials)); // rendering the template if no error...
 					deferred.resolve($el, id, options, partials); // call the final callback...
-					ev(); // and call events, just to finish!
+					if (module.options.fire_events) ev('apply'); // and call events, just to finish!
 				});
 		}
 		else {
@@ -2130,7 +2132,7 @@ module.exports = function (cylinder, _module) {
 			detachAllChildrenFromElement($el); // detach every children first so we don't lose any events...
 			$el.html(module.render(id, options, partials)); // rendering the template...
 			deferred.resolve($el, id, options, partials); // call the final callback...
-			ev(); // and call events, just to finish!
+			if (module.options.fire_events) ev('apply'); // and call events, just to finish!
 		}
 
 		return deferred.promise(); // return the promise so we can declare deferred callbacks!
@@ -2159,13 +2161,14 @@ module.exports = function (cylinder, _module) {
 		if ($el === null || $el.length == 0)
 			throw new CylinderException('Trying to replace contents on an empty or unknown jQuery element.');
 
-		var ev = function () {
+		var ev = function (name) {
 			// this will trigger events
 			// so the developer can do interesting stuff!
-			if (module.options.fire_events) {
-				cylinder.trigger('replace', $el, options, partials); // and then trigger the generic event!
-			}
+			cylinder.trigger(name, $el, options, partials);
 		};
+
+		// call "before" events, before replacing...
+		if (module.options.fire_events) ev('beforereplace');
 
 		// this will be the HTML to render
 		var template = '';
@@ -2193,7 +2196,7 @@ module.exports = function (cylinder, _module) {
 		detachAllChildrenFromElement($el); // detach every children first so we don't lose any events...
 		$el.html(result); // apply template...
 		deferred.resolve($el, options, partials); // call the final callback...
-		ev(); // and call events, just to finish!
+		if (module.options.fire_events) ev('replace'); // and call events, just to finish!
 
 		return deferred.promise(); // return the promise so we can declare deferred callbacks!
 	};
