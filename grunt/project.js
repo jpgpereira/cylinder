@@ -9,7 +9,7 @@ module.exports = {
 
 	// development folders
 	dev: './dev',
-	dev_core: '<%= project.dev %>/core',
+	dev_classes: '<%= project.dev %>/classes',
 	dev_extensions: '<%= project.dev %>/extensions',
 	dev_modules: '<%= project.dev %>/modules',
 	dev_vendor: '<%= project.dev %>/vendor',

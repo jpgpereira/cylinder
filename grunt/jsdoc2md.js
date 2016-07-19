@@ -2,8 +2,9 @@ module.exports = {
 
 	docs: {
 		files: [
-			{ src: '<%= project.dev_core %>/class.js', dest: '<%= project.docs_generated %>/core.class.md' },
-			{ src: '<%= project.dev_core %>/exception.js', dest: '<%= project.docs_generated %>/core.exception.md' },
+			{ src: '<%= project.dev_classes %>/class.js', dest: '<%= project.docs_generated %>/classes.class.md' },
+			{ src: '<%= project.dev_classes %>/exception.js', dest: '<%= project.docs_generated %>/classes.exception.md' },
+			{ src: '<%= project.dev_classes %>/resizerule.js', dest: '<%= project.docs_generated %>/classes.resizerule.md' },
 			{ src: '<%= project.dev_extensions %>/controllers.js', dest: '<%= project.docs_generated %>/extension.controllers.md' },
 			{ src: '<%= project.dev_modules %>/analytics.js', dest: '<%= project.docs_generated %>/module.analytics.md' },
 			{ src: '<%= project.dev_modules %>/dom.js', dest: '<%= project.docs_generated %>/module.dom.md' },
