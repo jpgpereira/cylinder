@@ -28,7 +28,7 @@ module.exports = function (cylinder, _module) {
 
 		// construction stuff
 		var name = !cylinder.s.isBlank(n) ? n : cylinder.s.slugify(obj.$el.attr('class') || obj.$el.prop('nodeName') || 'window');
-		var isWindow = obj.$el.is(cylinder.dom.$window);
+		var isWindow = cylinder.$.isWindow(obj.$el[0]);
 		var isHtml = obj.$el.is(cylinder.dom.$html);
 		var isBody = obj.$el.is(cylinder.dom.$body);
 
@@ -156,7 +156,7 @@ module.exports = function (cylinder, _module) {
 			}
 
 			// check if we should scroll first!
-			var scroll_left = left >= 0
+			var scroll_left = left >= 0;
 			var scroll_top = top >= 0;
 			if (!scroll_left && !scroll_top) return; // do not even scroll! it's just a troll!
 
