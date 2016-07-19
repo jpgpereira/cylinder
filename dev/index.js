@@ -1,8 +1,9 @@
 (function (scope) {
 
 	// include main classes
-	scope.CylinderClass = require('./core/class');
-	scope.CylinderException = require('./core/exception');
+	scope.CylinderClass = require('./classes/class');
+	scope.CylinderException = require('./classes/exception');
+	scope.CylinderResizeRule = require('./classes/resizerule');
 
 	// include extension/module classes
 	scope.CylinderClass.ExtensionControllers = require('./extensions/controllers');

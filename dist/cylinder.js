@@ -1,10 +1,12 @@
 /*
- * cylinder v0.13.0 (2016-07-13 14:45:57)
+ * cylinder v0.13.1 (2016-07-19 15:32:28)
  * @author Luís Soares <luis.soares@comon.pt>
  */
 
 
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+'use strict';
+
 /**
  * Main framework class.
  * Extends upon [Backbone.Events](http://backbonejs.org/#Events).
@@ -20,7 +22,7 @@ function CylinderClass () {
 	 * Framework version.
 	 * @return {String}
 	 */
-	this.version = '0.13.0';
+	this.version = '0.13.1';
 
 	/**
 	 * Checks if the framework has been initialized.
@@ -283,6 +285,8 @@ function CylinderClass () {
 module.exports = CylinderClass;
 
 },{}],2:[function(require,module,exports){
+'use strict';
+
 /**
  * Creates a new CylinderException object.
  *
@@ -319,6 +323,62 @@ function CylinderException (message, value) {
 module.exports = CylinderException;
 
 },{}],3:[function(require,module,exports){
+'use strict';
+
+/**
+ * Creates a new rule to be used with the Cylinder/Resize module.
+ *
+ * @class
+ * @param  {Object}  options            - The options for this rule.
+ * @param  {Number}  options.width_min  - The mininum width.
+ * @param  {Number}  options.width_max  - The maximum width.
+ * @param  {Number}  options.height_min - The mininum height.
+ * @param  {Number}  options.height_max - The maximum height.
+ * @param  {Function} options.callback<Number,Number,CylinderResizeRule> - A callback function defining the rule given a width and height. Must return a boolean.
+ *
+ * @example
+ * // creates a new rule
+ * var rule = new CylinderResizeRule({
+ *     min_width: 0,
+ *     max_width: 767,
+ *     callback: function (width, height, rule) {
+ *         return width >= rule.min_width && width <= rule.min_height;
+ *     }
+ * });
+ *
+ * // adds the rule into the module
+ * Cylinder.resize.addRule('layout-xs', rule);
+ *
+ * // on a resize, if the callback returns true,
+ * // the name of the rule will be added as a class to the <body> element
+ * // example: <body class="layout-xs">
+ */
+function CylinderResizeRule (options) {
+	_.extend(this, {
+		name: null,
+		width_min: null,
+		width_max: null,
+		height_min: null,
+		height_max: null,
+		callback: null
+	}, options);
+
+	/**
+	 * Turns the rule into a string.
+	 * @return {String}
+	 */
+	this.toString = function () {
+		return JSON.stringify(this);
+	}
+
+	return this;
+};
+
+module.exports = CylinderResizeRule;
+
+},{}],4:[function(require,module,exports){
+'use strict';
+
 /**
  * @exports CylinderControllers
  * @augments CylinderClass
@@ -441,12 +501,13 @@ module.exports = function (instance) {
 
 };
 
-},{}],4:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 (function (scope) {
 
 	// include main classes
-	scope.CylinderClass = require('./core/class');
-	scope.CylinderException = require('./core/exception');
+	scope.CylinderClass = require('./classes/class');
+	scope.CylinderException = require('./classes/exception');
+	scope.CylinderResizeRule = require('./classes/resizerule');
 
 	// include extension/module classes
 	scope.CylinderClass.ExtensionControllers = require('./extensions/controllers');
@@ -473,7 +534,9 @@ module.exports = function (instance) {
 
 })(window);
 
-},{"./core/class":1,"./core/exception":2,"./extensions/controllers":3,"./modules/analytics":5,"./modules/dom":6,"./modules/resize":7,"./modules/router":8,"./modules/scroll":9,"./modules/store":10,"./modules/templates":11,"./modules/utils":12}],5:[function(require,module,exports){
+},{"./classes/class":1,"./classes/exception":2,"./classes/resizerule":3,"./extensions/controllers":4,"./modules/analytics":6,"./modules/dom":7,"./modules/resize":8,"./modules/router":9,"./modules/scroll":10,"./modules/store":11,"./modules/templates":12,"./modules/utils":13}],6:[function(require,module,exports){
+'use strict';
+
 module.exports = function (cylinder, _module) {
 
 	/**
@@ -547,7 +610,9 @@ module.exports = function (cylinder, _module) {
 
 };
 
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
+'use strict';
+
 module.exports = function (cylinder, _module) {
 
 	/**
@@ -640,9 +705,13 @@ module.exports = function (cylinder, _module) {
 
 };
 
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
+'use strict';
+
 /*! viewportSize | Author: Tyson Matanich, 2013 | License: MIT */
 (function(n){n.viewportSize={},n.viewportSize.getHeight=function(){return t("Height")},n.viewportSize.getWidth=function(){return t("Width")};var t=function(t){var f,o=t.toLowerCase(),e=n.document,i=e.documentElement,r,u;return n["inner"+t]===undefined?f=i["client"+t]:n["inner"+t]!=i["client"+t]?(r=e.createElement("body"),r.id="vpw-test-b",r.style.cssText="overflow:scroll",u=e.createElement("div"),u.id="vpw-test-d",u.style.cssText="position:absolute;top:-1000px",u.innerHTML="<style>@media("+o+":"+i["client"+t]+"px){body#vpw-test-b div#vpw-test-d{"+o+":7px!important}}<\/style>",r.appendChild(u),i.insertBefore(r,e.head),f=u["offset"+t]==7?i["client"+t]:n["inner"+t],i.removeChild(r)):f=n["inner"+t],f}})(window);
+
+var CylinderResizeRule = require('../classes/resizerule');
 
 module.exports = function (cylinder, _module) {
 
@@ -667,103 +736,68 @@ module.exports = function (cylinder, _module) {
 	 * Current window width.
 	 * @type {Number}
 	 */
-	module.width = 0;
+	module.width = null;
 
 	/**
 	 * Current window height.
 	 * @type {Number}
 	 */
-	module.height = 0;
+	module.height = null;
 
 	/**
 	 * Previous window width.
 	 * @type {Number}
 	 */
-	module.previous_width = 0;
+	module.previous_width = null;
 
 	/**
 	 * Previous window height.
 	 * @type {Number}
 	 */
-	module.previous_height = 0;
-
-	/**
-	 * Creates a new rule to be used with the Cylinder/Resize.
-	 *
-	 * @class CylinderResizeRule
-	 * @param  {Object}  options            - The options for this rule.
-	 * @param  {Number}  options.width_min  - The mininum width.
-	 * @param  {Number}  options.width_max  - The maximum width.
-	 * @param  {Number}  options.height_min - The mininum height.
-	 * @param  {Number}  options.height_max - The maximum height.
-	 * @param  {Function} options.callback<Number,Number,CylinderResizeRule> - A callback function defining the rule given a width and height. Must return a boolean.
-	 * @return {CylinderResizeRule} The new resize rule.
-	 *
-	 * @example
-	 * // creates a new rule
-	 * var rule = new CylinderResizeRule({
-	 *     min_width: 0,
-	 *     max_width: 767,
-	 *     callback: function (width, height, rule) {
-	 *         return width >= rule.min_width && width <= rule.min_height;
-	 *     }
-	 * });
-	 *
-	 * // adds the rule into the module
-	 * Cylinder.resize.addRule('layout-xs', rule);
-	 *
-	 * // on a resize, if the callback returns true,
-	 * // the name of the rule will be added as a class to the <body> element
-	 * // example: <body class="layout-xs">
-	 */
-	function CylinderResizeRule (options) {
-		var r = _.extend({
-			name: null,
-			width_min: null,
-			width_max: null,
-			height_min: null,
-			height_max: null,
-			callback: _.noop
-		}, options);
-
-		/**
-		 * Turns the rule into a string.
-		 * @return {String}
-		 */
-		r.toString = function () {
-			return JSON.stringify(r);
-		}
-
-		return r;
-	}
+	module.previous_height = null;
 
 	// just a default rule callback
 	// for the rules we define below.
 	function defaultRuleCallback (width, height, rule) {
-		return width >= rule.width && (_.isNumber(rule.width_max) ? width <= rule.width_max : true);
+		return width >= rule.width_min && (_.isNumber(rule.width_max) ? width <= rule.width_max : true);
 	}
 
 	var rules = {
 		// THIS WILL HOLD THE DEFAULT RULES!
-		// BASIC RULES: in between widths!
-		'layout-xs': new CylinderResizeRule({ width_min: 0, width_max: 767 }),
-		'layout-sm': new CylinderResizeRule({ width_min: 768, width_max: 991 }),
-		'layout-md': new CylinderResizeRule({ width_min: 992, width_max: 1199 }),
-		'layout-lg': new CylinderResizeRule({ width_min: 1200 })
+		// These rules are based on sizes from Bootstrap v4.0.0-alpha.2
+		'layout-xs': new CylinderResizeRule({ width_min: 0, width_max: 543 }),
+		'layout-sm': new CylinderResizeRule({ width_min: 544, width_max: 767 }),
+		'layout-md': new CylinderResizeRule({ width_min: 768, width_max: 991 }),
+		'layout-lg': new CylinderResizeRule({ width_min: 992, width_max: 1199 }),
+		'layout-xl': new CylinderResizeRule({ width_min: 1200 })
 	};
 
 	/**
 	 * Adds a rule to the module.
+	 *
 	 * @param    {String}             name - The name of the rule to add.
 	 * @param    {CylinderResizeRule} rule - The rule object to add.
 	 */
 	module.addRule = function (name, rule) {
+		// if the passed rule is not an instance of CylinderResizeRule,
+		// then we'll just throw an exception.
+		if (!(rule instanceof CylinderResizeRule)) {
+			throw new CylinderException('Trying to add something that is not a CylinderResizeRule to the resize module!');
+		}
+
+		// add the rule
 		rules[name] = rule;
+
+		if (module.width !== null && module.height !== null) {
+			// if the module already triggered a resize event,
+			// then, from now on, we'll always evaluate new rules as soon as they're added.
+			cylinder.dom.$body.toggleClass(name, (_.isFunction(rule.callback) ? rule.callback : defaultRuleCallback)(module.width, module.height, rule));
+		}
 	}
 
 	/**
 	 * Removes a rule from the module.
-	 * @function
+	 *
 	 * @param    {String} name - The name of the rule to remove.
 	 */
 	module.removeRule = function (name) {
@@ -821,7 +855,9 @@ module.exports = function (cylinder, _module) {
 
 };
 
-},{}],8:[function(require,module,exports){
+},{"../classes/resizerule":3}],9:[function(require,module,exports){
+'use strict';
+
 module.exports = function (cylinder, _module) {
 
 	/**
@@ -1251,7 +1287,9 @@ module.exports = function (cylinder, _module) {
 
 };
 
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
+'use strict';
+
 module.exports = function (cylinder, _module) {
 
 	// ALL DEPENDENCIES FIRST!
@@ -1280,7 +1318,7 @@ module.exports = function (cylinder, _module) {
 
 		// construction stuff
 		var name = !cylinder.s.isBlank(n) ? n : cylinder.s.slugify(obj.$el.attr('class') || obj.$el.prop('nodeName') || 'window');
-		var isWindow = obj.$el.is(cylinder.dom.$window);
+		var isWindow = cylinder.$.isWindow(obj.$el[0]);
 		var isHtml = obj.$el.is(cylinder.dom.$html);
 		var isBody = obj.$el.is(cylinder.dom.$body);
 
@@ -1408,7 +1446,7 @@ module.exports = function (cylinder, _module) {
 			}
 
 			// check if we should scroll first!
-			var scroll_left = left >= 0
+			var scroll_left = left >= 0;
 			var scroll_top = top >= 0;
 			if (!scroll_left && !scroll_top) return; // do not even scroll! it's just a troll!
 
@@ -1463,7 +1501,9 @@ module.exports = function (cylinder, _module) {
 
 };
 
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
+'use strict';
+
 module.exports = function (cylinder, _module) {
 
 	/**
@@ -1744,7 +1784,9 @@ module.exports = function (cylinder, _module) {
 
 };
 
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
+'use strict';
+
 module.exports = function (cylinder, _module) {
 
 	/**
@@ -1775,6 +1817,8 @@ module.exports = function (cylinder, _module) {
 	 * @property {Boolean}        load_base_path - Remote template base path.
 	 * @property {Boolean}        load_extension - Remote template file extension.
 	 * @property {Boolean}        fire_events    - Fires all events when rendering or doing other things.
+	 * @property {Boolean}        detach         - If true, the <code>apply</code> and <code>replace</code> methods attempt to remove all children first.
+	 *                                             Be wary that this might provoke memory leaks by not unbinding any data or events from the children.
 	 * @property {Boolean}        partials       - All templates will always be available as partials.
 	 * @property {String|Boolean} premades       - If not false, the module will look for a specific object variable for templates (default: JST).
 	 */
@@ -1784,6 +1828,7 @@ module.exports = function (cylinder, _module) {
 		load_base_path: 'tpl/',
 		load_extension: '.mustache',
 		fire_events: true,
+		detach: false,
 		partials: true,
 		premades: 'JST'
 	};
@@ -2014,6 +2059,19 @@ module.exports = function (cylinder, _module) {
 			: null;
 	}
 
+	// helper function to detach elements from an element
+	function detachAllChildrenFromElement ($el) {
+		if (module.options.detach) {
+			// attempt to detach all children,
+			// so that events are not lost
+			$el.children().detach();
+		}
+		else {
+			// just empty the object
+			$el.empty();
+		}
+	}
+
 	/**
 	 * Renders a template and applies it to a jQuery element.<br /><br />
 	 * If the element is not a jQuery element, it will throw an exception.<br />
@@ -2036,21 +2094,23 @@ module.exports = function (cylinder, _module) {
 		if ($el === null || $el.length == 0)
 			throw new CylinderException('Trying to apply a template to an empty or unknown jQuery element.');
 
-		var ev = function () {
+		var ev = function (name) {
 			// this will trigger events
 			// so the developer can do interesting stuff!
-			if (module.options.fire_events) {
-				var parts = id.split('/');
-				_.reduce(parts, function (memo, part) {
-					// trigger specific events...
-					// we'll do this based on namespace, for ease of programming!
-					memo = cylinder.s.trim(memo + '/' + part, '/');
-					cylinder.trigger('apply:' + memo, $el, id, options, partials);
-					return memo;
-				}, '');
-				cylinder.trigger('apply', $el, id, options, partials); // and then trigger the generic event!
-			}
+			var str = cylinder.s.trim(id, '/');
+			var parts = str.split('/');
+			_.reduceRight(parts, function (memo, part) {
+				// trigger specific events...
+				// we'll do this based on namespace, for ease of programming!
+				cylinder.trigger(name + ':' + memo, $el, id, options, partials);
+				memo = cylinder.s(memo).replace(part, '').trim('/').value();
+				return memo;
+			}, str);
+			cylinder.trigger(name, $el, id, options, partials); // and then trigger the generic event!
 		};
+
+		// call "before" events, before applying...
+		if (module.options.fire_events) ev('beforeapply');
 
 		if (module.options.load) {
 			// asynchronous loading is enabled,
@@ -2061,16 +2121,18 @@ module.exports = function (cylinder, _module) {
 					deferred.reject(err); // error occurred while loading the template...
 				})
 				.done(function () {
+					detachAllChildrenFromElement($el); // detach every children first so we don't lose any events...
 					$el.html(module.render(id, options, partials)); // rendering the template if no error...
 					deferred.resolve($el, id, options, partials); // call the final callback...
-					ev(); // and call events, just to finish!
+					if (module.options.fire_events) ev('apply'); // and call events, just to finish!
 				});
 		}
 		else {
 			// "load" is not active, just return and do render!
+			detachAllChildrenFromElement($el); // detach every children first so we don't lose any events...
 			$el.html(module.render(id, options, partials)); // rendering the template...
 			deferred.resolve($el, id, options, partials); // call the final callback...
-			ev(); // and call events, just to finish!
+			if (module.options.fire_events) ev('apply'); // and call events, just to finish!
 		}
 
 		return deferred.promise(); // return the promise so we can declare deferred callbacks!
@@ -2099,13 +2161,14 @@ module.exports = function (cylinder, _module) {
 		if ($el === null || $el.length == 0)
 			throw new CylinderException('Trying to replace contents on an empty or unknown jQuery element.');
 
-		var ev = function () {
+		var ev = function (name) {
 			// this will trigger events
 			// so the developer can do interesting stuff!
-			if (module.options.fire_events) {
-				cylinder.trigger('replace', $el, options, partials); // and then trigger the generic event!
-			}
+			cylinder.trigger(name, $el, options, partials);
 		};
+
+		// call "before" events, before replacing...
+		if (module.options.fire_events) ev('beforereplace');
 
 		// this will be the HTML to render
 		var template = '';
@@ -2130,9 +2193,10 @@ module.exports = function (cylinder, _module) {
 			_.extend({}, cache_partials, partials)
 		);
 
-		$el.html(result); // applying template...
+		detachAllChildrenFromElement($el); // detach every children first so we don't lose any events...
+		$el.html(result); // apply template...
 		deferred.resolve($el, options, partials); // call the final callback...
-		ev(); // and call events, just to finish!
+		if (module.options.fire_events) ev('replace'); // and call events, just to finish!
 
 		return deferred.promise(); // return the promise so we can declare deferred callbacks!
 	};
@@ -2150,7 +2214,9 @@ module.exports = function (cylinder, _module) {
 
 };
 
-},{}],12:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
+'use strict';
+
 module.exports = function (cylinder, _module) {
 
 	/**
@@ -2213,4 +2279,4 @@ module.exports = function (cylinder, _module) {
 
 };
 
-},{}]},{},[4]);
+},{}]},{},[5]);

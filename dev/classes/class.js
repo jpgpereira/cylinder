@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * Main framework class.
  * Extends upon [Backbone.Events](http://backbonejs.org/#Events).

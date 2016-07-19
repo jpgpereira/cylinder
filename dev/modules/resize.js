@@ -1,5 +1,9 @@
+'use strict';
+
 /*! viewportSize | Author: Tyson Matanich, 2013 | License: MIT */
 (function(n){n.viewportSize={},n.viewportSize.getHeight=function(){return t("Height")},n.viewportSize.getWidth=function(){return t("Width")};var t=function(t){var f,o=t.toLowerCase(),e=n.document,i=e.documentElement,r,u;return n["inner"+t]===undefined?f=i["client"+t]:n["inner"+t]!=i["client"+t]?(r=e.createElement("body"),r.id="vpw-test-b",r.style.cssText="overflow:scroll",u=e.createElement("div"),u.id="vpw-test-d",u.style.cssText="position:absolute;top:-1000px",u.innerHTML="<style>@media("+o+":"+i["client"+t]+"px){body#vpw-test-b div#vpw-test-d{"+o+":7px!important}}<\/style>",r.appendChild(u),i.insertBefore(r,e.head),f=u["offset"+t]==7?i["client"+t]:n["inner"+t],i.removeChild(r)):f=n["inner"+t],f}})(window);
+
+var CylinderResizeRule = require('../classes/resizerule');
 
 module.exports = function (cylinder, _module) {
 
@@ -24,103 +28,68 @@ module.exports = function (cylinder, _module) {
 	 * Current window width.
 	 * @type {Number}
 	 */
-	module.width = 0;
+	module.width = null;
 
 	/**
 	 * Current window height.
 	 * @type {Number}
 	 */
-	module.height = 0;
+	module.height = null;
 
 	/**
 	 * Previous window width.
 	 * @type {Number}
 	 */
-	module.previous_width = 0;
+	module.previous_width = null;
 
 	/**
 	 * Previous window height.
 	 * @type {Number}
 	 */
-	module.previous_height = 0;
-
-	/**
-	 * Creates a new rule to be used with the Cylinder/Resize.
-	 *
-	 * @class CylinderResizeRule
-	 * @param  {Object}  options            - The options for this rule.
-	 * @param  {Number}  options.width_min  - The mininum width.
-	 * @param  {Number}  options.width_max  - The maximum width.
-	 * @param  {Number}  options.height_min - The mininum height.
-	 * @param  {Number}  options.height_max - The maximum height.
-	 * @param  {Function} options.callback<Number,Number,CylinderResizeRule> - A callback function defining the rule given a width and height. Must return a boolean.
-	 * @return {CylinderResizeRule} The new resize rule.
-	 *
-	 * @example
-	 * // creates a new rule
-	 * var rule = new CylinderResizeRule({
-	 *     min_width: 0,
-	 *     max_width: 767,
-	 *     callback: function (width, height, rule) {
-	 *         return width >= rule.min_width && width <= rule.min_height;
-	 *     }
-	 * });
-	 *
-	 * // adds the rule into the module
-	 * Cylinder.resize.addRule('layout-xs', rule);
-	 *
-	 * // on a resize, if the callback returns true,
-	 * // the name of the rule will be added as a class to the <body> element
-	 * // example: <body class="layout-xs">
-	 */
-	function CylinderResizeRule (options) {
-		var r = _.extend({
-			name: null,
-			width_min: null,
-			width_max: null,
-			height_min: null,
-			height_max: null,
-			callback: _.noop
-		}, options);
-
-		/**
-		 * Turns the rule into a string.
-		 * @return {String}
-		 */
-		r.toString = function () {
-			return JSON.stringify(r);
-		}
-
-		return r;
-	}
+	module.previous_height = null;
 
 	// just a default rule callback
 	// for the rules we define below.
 	function defaultRuleCallback (width, height, rule) {
-		return width >= rule.width && (_.isNumber(rule.width_max) ? width <= rule.width_max : true);
+		return width >= rule.width_min && (_.isNumber(rule.width_max) ? width <= rule.width_max : true);
 	}
 
 	var rules = {
 		// THIS WILL HOLD THE DEFAULT RULES!
-		// BASIC RULES: in between widths!
-		'layout-xs': new CylinderResizeRule({ width_min: 0, width_max: 767 }),
-		'layout-sm': new CylinderResizeRule({ width_min: 768, width_max: 991 }),
-		'layout-md': new CylinderResizeRule({ width_min: 992, width_max: 1199 }),
-		'layout-lg': new CylinderResizeRule({ width_min: 1200 })
+		// These rules are based on sizes from Bootstrap v4.0.0-alpha.2
+		'layout-xs': new CylinderResizeRule({ width_min: 0, width_max: 543 }),
+		'layout-sm': new CylinderResizeRule({ width_min: 544, width_max: 767 }),
+		'layout-md': new CylinderResizeRule({ width_min: 768, width_max: 991 }),
+		'layout-lg': new CylinderResizeRule({ width_min: 992, width_max: 1199 }),
+		'layout-xl': new CylinderResizeRule({ width_min: 1200 })
 	};
 
 	/**
 	 * Adds a rule to the module.
+	 *
 	 * @param    {String}             name - The name of the rule to add.
 	 * @param    {CylinderResizeRule} rule - The rule object to add.
 	 */
 	module.addRule = function (name, rule) {
+		// if the passed rule is not an instance of CylinderResizeRule,
+		// then we'll just throw an exception.
+		if (!(rule instanceof CylinderResizeRule)) {
+			throw new CylinderException('Trying to add something that is not a CylinderResizeRule to the resize module!');
+		}
+
+		// add the rule
 		rules[name] = rule;
+
+		if (module.width !== null && module.height !== null) {
+			// if the module already triggered a resize event,
+			// then, from now on, we'll always evaluate new rules as soon as they're added.
+			cylinder.dom.$body.toggleClass(name, (_.isFunction(rule.callback) ? rule.callback : defaultRuleCallback)(module.width, module.height, rule));
+		}
 	}
 
 	/**
 	 * Removes a rule from the module.
-	 * @function
+	 *
 	 * @param    {String} name - The name of the rule to remove.
 	 */
 	module.removeRule = function (name) {

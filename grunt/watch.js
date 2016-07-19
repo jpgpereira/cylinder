@@ -14,7 +14,7 @@ module.exports = {
 
 	js_cylinder: {
 		files: [
-			'<%= project.dev_core %>/**',
+			'<%= project.dev_classes %>/**',
 			'<%= project.dev_extensions %>/**',
 			'<%= project.dev_modules %>/**'
 		],

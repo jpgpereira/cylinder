@@ -49,6 +49,10 @@ The options taken by the module.
     <td>fire_events</td><td><code>Boolean</code></td><td><p>Fires all events when rendering or doing other things.</p>
 </td>
     </tr><tr>
+    <td>detach</td><td><code>Boolean</code></td><td><p>If true, the <code>apply</code> and <code>replace</code> methods attempt to remove all children first.
+                                            Be wary that this might provoke memory leaks by not unbinding any data or events from the children.</p>
+</td>
+    </tr><tr>
     <td>partials</td><td><code>Boolean</code></td><td><p>All templates will always be available as partials.</p>
 </td>
     </tr><tr>
