@@ -56,11 +56,12 @@ module.exports = function (cylinder, _module) {
 
 	var rules = {
 		// THIS WILL HOLD THE DEFAULT RULES!
-		// BASIC RULES: in between widths!
-		'layout-xs': new CylinderResizeRule({ width_min: 0, width_max: 767 }),
-		'layout-sm': new CylinderResizeRule({ width_min: 768, width_max: 991 }),
-		'layout-md': new CylinderResizeRule({ width_min: 992, width_max: 1199 }),
-		'layout-lg': new CylinderResizeRule({ width_min: 1200 })
+		// These rules are based on sizes from Bootstrap v4.0.0-alpha.2
+		'layout-xs': new CylinderResizeRule({ width_min: 0, width_max: 543 }),
+		'layout-sm': new CylinderResizeRule({ width_min: 544, width_max: 767 }),
+		'layout-md': new CylinderResizeRule({ width_min: 768, width_max: 991 }),
+		'layout-lg': new CylinderResizeRule({ width_min: 992, width_max: 1199 }),
+		'layout-xl': new CylinderResizeRule({ width_min: 1200 })
 	};
 
 	/**
