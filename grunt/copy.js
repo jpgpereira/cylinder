@@ -7,7 +7,7 @@ module.exports = {
 			{
 				expand: true,
 				cwd: '<%= project.bower %>/async/dist/',
-				src: [ 'async.min.js' ],
+				src: [ 'async.min.js', 'async.min.map' ],
 				dest: '<%= project.dist_vendor %>'
 			},
 
