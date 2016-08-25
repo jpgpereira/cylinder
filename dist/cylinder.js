@@ -1,5 +1,5 @@
 /*
- * cylinder v0.13.1 (2016-07-19 15:32:28)
+ * cylinder v0.13.1 (2016-08-25 14:50:15)
  * @author Luís Soares <luis.soares@comon.pt>
  */
 
@@ -267,12 +267,12 @@ function CylinderClass () {
 				instance.extend(func);
 			});
 
+			// call event so other parts of the app
+			// can be aware the framework has been initialized.
+			instance.trigger('init', instance);
+
 			// run callback, if it's a method!
 			if (_.isFunction(callback)) callback(instance);
-
-			// call event so the app can finish stuff!
-			// this will be assyncronous!
-			instance.trigger('init', instance);
 		});
 
 		// return the instance itself because the programmer
@@ -484,12 +484,12 @@ module.exports = function (instance) {
 				instance.controller(name, ctrl.constructor);
 			});
 
+			// call event so other parts of the app
+			// can be aware controllers have been initialized.
+			instance.trigger('initcontrollers', instance);
+
 			// run callback, if it's a method!
 			if (_.isFunction(callback)) callback(instance);
-
-			// call event so that the app can finish stuff!
-			// this will be assyncronous!
-			instance.trigger('initcontrollers', instance);
 		});
 
 		// return the instance itself because the programmer
