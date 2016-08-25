@@ -105,12 +105,12 @@ module.exports = function (instance) {
 				instance.controller(name, ctrl.constructor);
 			});
 
+			// call event so other parts of the app
+			// can be aware controllers have been initialized.
+			instance.trigger('initcontrollers', instance);
+
 			// run callback, if it's a method!
 			if (_.isFunction(callback)) callback(instance);
-
-			// call event so that the app can finish stuff!
-			// this will be assyncronous!
-			instance.trigger('initcontrollers', instance);
 		});
 
 		// return the instance itself because the programmer

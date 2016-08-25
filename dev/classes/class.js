@@ -260,12 +260,12 @@ function CylinderClass () {
 				instance.extend(func);
 			});
 
+			// call event so other parts of the app
+			// can be aware the framework has been initialized.
+			instance.trigger('init', instance);
+
 			// run callback, if it's a method!
 			if (_.isFunction(callback)) callback(instance);
-
-			// call event so the app can finish stuff!
-			// this will be assyncronous!
-			instance.trigger('init', instance);
 		});
 
 		// return the instance itself because the programmer
