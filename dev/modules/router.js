@@ -118,6 +118,14 @@ module.exports = function (cylinder, _module) {
 		);
 	};
 
+	function get_url () {
+		// this attempts to return the current url
+		// so it can be used by other methods
+		return (module.options.push)
+			? Backbone.history.location.pathname.replace(path_root, '')
+			: Backbone.history.location.hash.replace('!', '').replace('#', '')
+	};
+
 	// this will be the router itself!
 	// it will manage all routes and even callbacks!
 	var obj = new (Backbone.Router.extend({
@@ -134,36 +142,35 @@ module.exports = function (cylinder, _module) {
 			// here we run through potential global middlewares,
 			// and then specific middlewares, followed by the actual route callback!
 			return middleware_global(router, composition, args, function () {
+				module.previous_route = module.route; // save the previous route...
+				module.route = name; // set the current route...
+
+				module.previous_args = module.args; // save the previous arguments...
+				module.args = args; // set the current arguments...
+
+				module.previous_url = module.url; // save the previous url...
+				module.url = get_url(); // set the new url...
+
+				if (module.previous_route) {
+					// events for the previous route
+					cylinder.trigger('routeout:' + module.previous_route, module.previous_args); // trigger a specific event for the framework...
+					cylinder.trigger('routeout', module.previous_route, module.previous_args); // trigger a global event for the framework...
+
+					// events for the route change
+					cylinder.trigger('routechange:' + module.previous_route + ':' + name, module.previous_args, args); // trigger specific event 1 for the framework...
+					cylinder.trigger('routechange:' + module.previous_route, module.previous_args, name, args); // trigger specific event 2 for the framework...
+					cylinder.trigger('routechange', module.previous_route, module.previous_args, name, args); // trigger a global event for the framework...
+				}
+
+				// events for the new route
+				cylinder.trigger('route:' + name, args); // trigger a specific event for the framework...
+				cylinder.trigger('route', name, args); // trigger a global event for the framework...
+
+				// signal the module that a route has been triggered...
+				module.done = true;
+
+				// call the middleware now!
 				return middleware_specific(router, composition, args, function () {
-					module.previous_route = module.route; // save the previous route...
-					module.route = name; // set the current route...
-
-					module.previous_args = module.args; // save the previous arguments...
-					module.args = args; // set the current arguments...
-
-					module.previous_url = module.url; // save the previous url...
-					module.url = (module.options.push) // set the new url...
-						? Backbone.history.location.pathname.replace(path_root, '')
-						: Backbone.history.location.hash.replace('!', '').replace('#', '');
-
-					if (module.previous_route) {
-						// events for the previous route
-						cylinder.trigger('routeout:' + module.previous_route, module.previous_args); // trigger a specific event for the framework...
-						cylinder.trigger('routeout', module.previous_route, module.previous_args); // trigger a global event for the framework...
-
-						// events for the route change
-						cylinder.trigger('routechange:' + module.previous_route + ':' + name, module.previous_args, args); // trigger specific event 1 for the framework...
-						cylinder.trigger('routechange:' + module.previous_route, module.previous_args, name, args); // trigger specific event 2 for the framework...
-						cylinder.trigger('routechange', module.previous_route, module.previous_args, name, args); // trigger a global event for the framework...
-					}
-
-					// events for the new route
-					cylinder.trigger('route:' + name, args); // trigger a specific event for the framework...
-					cylinder.trigger('route', name, args); // trigger a global event for the framework...
-
-					// signal the module that a route has been triggered...
-					module.done = true;
-
 					if (callback) callback.apply(router, args); // ...and finished!
 				});
 			});
@@ -274,12 +281,17 @@ module.exports = function (cylinder, _module) {
 	 * Changes the current URL to the one specified.<br />
 	 * If <code>start()</code> wasn't called, then it will change URL location natively instead of going through the router's methods.
 	 *
-	 * @param  {String}  url       - The URL to navigate to.
+	 * @param  {String}  [url]     - The URL to navigate to. If null, it will navigate to the same page by forcing options.trigger to `true`.
 	 * @param  {Boolean} [options] - Options to pass to Backbone.Router's method.
 	 * @param  {Boolean} [prefix]  - Should the method include the prefix set in the module's <code>options.prefix</code>?
 	 * @return {router} Returns the module itself, to ease chaining.
 	 */
 	module.go = function (url, options, prefix) {
+		if (!_.isString(url)) {
+			url = get_url(); // set the url to the current one
+			options.trigger = true; // and force processing of the current route!
+		}
+
 		if (!Backbone.History.started) {
 			if (module.options.push) window.location = path_full + url; // change full location!
 			else window.location.hash = '#' + url; // only do it if using hash-navigation!
