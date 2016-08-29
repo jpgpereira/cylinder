@@ -20,7 +20,7 @@ Router module for CylinderClass.
     * [.path()](#module_router.path) ⇒ <code>String</code>
     * [.start([silent])](#module_router.start) ⇒ <code>router</code>
     * [.stop()](#module_router.stop) ⇒ <code>router</code>
-    * [.go(url, [options], [prefix])](#module_router.go) ⇒ <code>router</code>
+    * [.go([url], [options], [prefix])](#module_router.go) ⇒ <code>router</code>
     * [.add([name], syntax, ...middleware)](#module_router.add)
     * [.use(func)](#module_router.use) ⇒ <code>router</code>
     * [.unuse(func)](#module_router.unuse) ⇒ <code>router</code>
@@ -241,7 +241,7 @@ Stops the router.
 
 <a name="module_router.go"></a>
 
-### router.go(url, [options], [prefix]) ⇒ <code>router</code>
+### router.go([url], [options], [prefix]) ⇒ <code>router</code>
 Changes the current URL to the one specified.<br />If <code>start()</code> wasn't called, then it will change URL location natively instead of going through the router's methods.
 
 **Kind**: static method of <code>[router](#module_router)</code>  
@@ -254,7 +254,7 @@ Changes the current URL to the one specified.<br />If <code>start()</code> wasn
   </thead>
   <tbody>
 <tr>
-    <td>url</td><td><code>String</code></td><td><p>The URL to navigate to.</p>
+    <td>[url]</td><td><code>String</code></td><td><p>The URL to navigate to. If null, it will navigate to the same page by forcing options.trigger to <code>true</code>.</p>
 </td>
     </tr><tr>
     <td>[options]</td><td><code>Boolean</code></td><td><p>Options to pass to Backbone.Router&#39;s method.</p>
