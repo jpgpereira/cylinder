@@ -1,5 +1,5 @@
 /*
- * cylinder v0.13.3 (2016-08-30 15:21:26)
+ * cylinder v0.13.4 (2016-08-30 20:48:55)
  * @author Luís Soares <luis.soares@comon.pt>
  */
 
@@ -22,7 +22,7 @@ function CylinderClass () {
 	 * Framework version.
 	 * @return {String}
 	 */
-	this.version = '0.13.3';
+	this.version = '0.13.4';
 
 	/**
 	 * Checks if the framework has been initialized.
@@ -210,7 +210,7 @@ function CylinderClass () {
 		modules[name] = ctor; // add module to cache
 		if (!initialized) return instance; // return the framework instance!
 
-		var module = {}; // the module object itself, might have methods and properties.
+		var module = { name: name }; // the module object itself, might have methods and properties.
 		var result = typeof ctor == 'function' // initialize module... (check if function or object)
 			? ctor(instance, module) // run constructor
 			: ctor; // it's an object, so just extend it
@@ -436,7 +436,7 @@ module.exports = function (instance) {
 			return null;
 		}
 
-		controllers[name] = { constructor: ctor, instance: {} }; // add controller to cache
+		controllers[name] = { constructor: ctor, instance: { name: name } }; // add controller to cache
 		if (!initialized) return controllers[name].instance; // return the framework instance!
 
 		var controller = controllers[name].instance; // pre-initialize controller...
