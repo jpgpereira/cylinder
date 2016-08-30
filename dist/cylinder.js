@@ -1,5 +1,5 @@
 /*
- * cylinder v0.13.3 (2016-08-29 14:49:43)
+ * cylinder v0.13.3 (2016-08-30 15:21:26)
  * @author Luís Soares <luis.soares@comon.pt>
  */
 
@@ -998,8 +998,10 @@ module.exports = function (cylinder, _module) {
 
 			if (module.previous_route) {
 				// events for the previous route
-				cylinder.trigger('routeout:' + module.previous_route, module.previous_args); // trigger a specific event for the framework...
-				cylinder.trigger('routeout', module.previous_route, module.previous_args); // trigger a global event for the framework...
+				if (module.previous_route !== module.route) { // only run if we're actually LEAVING the route
+					cylinder.trigger('routeout:' + module.previous_route, module.previous_args); // trigger a specific event for the framework...
+					cylinder.trigger('routeout', module.previous_route, module.previous_args); // trigger a global event for the framework...
+				}
 
 				// events for the route change
 				cylinder.trigger('routechange:' + module.previous_route + ':' + name, module.previous_args, args); // trigger specific event 1 for the framework...
