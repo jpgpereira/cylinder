@@ -57,7 +57,7 @@ module.exports = function (instance) {
 			return null;
 		}
 
-		controllers[name] = { constructor: ctor, instance: {} }; // add controller to cache
+		controllers[name] = { constructor: ctor, instance: { name: name } }; // add controller to cache
 		if (!initialized) return controllers[name].instance; // return the framework instance!
 
 		var controller = controllers[name].instance; // pre-initialize controller...

@@ -10,7 +10,7 @@ Templates module for CylinderClass.
     * [.has(id)](#module_templates.has) ⇒ <code>Boolean</code>
     * [.add(id, template, [defaults], [partials])](#module_templates.add) ⇒ <code>Object</code>
     * [.get(id)](#module_templates.get) ⇒ <code>Object</code>
-    * [.load(...ids)](#module_templates.load) ⇒ <code>Promise</code>
+    * [.load(...ids, [request])](#module_templates.load) ⇒ <code>Promise</code>
     * [.render(id, [options], [partials])](#module_templates.render) ⇒ <code>String</code>
     * [.apply($el, id, [options], [partials])](#module_templates.apply) ⇒ <code>Promise</code>
     * [.replace($el, [options], [partials])](#module_templates.replace) ⇒ <code>Promise</code>
@@ -152,7 +152,7 @@ Returns a template if it exists, and attempts to fetch from the local DOM if it 
 
 <a name="module_templates.load"></a>
 
-### templates.load(...ids) ⇒ <code>Promise</code>
+### templates.load(...ids, [request]) ⇒ <code>Promise</code>
 Attempts to load a remote template.<br />If multiple strings are provided, the method will call <code>Promise.fail(err)</code> if one of them fails to load, regardless of whether others succeeded.<br /><br />Notice: this method should be considered and used as an asynchronous method.
 
 **Kind**: static method of <code>[templates](#module_templates)</code>  
@@ -166,6 +166,9 @@ Attempts to load a remote template.<br />If multiple strings are provided, the 
   <tbody>
 <tr>
     <td>...ids</td><td><code>String</code></td><td><p>The unique identifier(s) of the template(s) to load.</p>
+</td>
+    </tr><tr>
+    <td>[request]</td><td><code>Object</code></td><td><p>Additional parameters for the AJAX request. This argument will not be accepted if there are multiple IDs to be loaded.</p>
 </td>
     </tr>  </tbody>
 </table>

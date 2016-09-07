@@ -203,7 +203,7 @@ function CylinderClass () {
 		modules[name] = ctor; // add module to cache
 		if (!initialized) return instance; // return the framework instance!
 
-		var module = {}; // the module object itself, might have methods and properties.
+		var module = { name: name }; // the module object itself, might have methods and properties.
 		var result = typeof ctor == 'function' // initialize module... (check if function or object)
 			? ctor(instance, module) // run constructor
 			: ctor; // it's an object, so just extend it
