@@ -1,5 +1,5 @@
 /*
- * cylinder v0.13.4 (2016-08-30 20:48:55)
+ * cylinder v0.13.5 (2016-09-07 10:59:24)
  * @author Luís Soares <luis.soares@comon.pt>
  */
 
@@ -22,7 +22,7 @@ function CylinderClass () {
 	 * Framework version.
 	 * @return {String}
 	 */
-	this.version = '0.13.4';
+	this.version = '0.13.5';
 
 	/**
 	 * Checks if the framework has been initialized.
@@ -1937,7 +1937,8 @@ module.exports = function (cylinder, _module) {
 	 * If multiple strings are provided, the method will call <code>Promise.fail(err)</code> if one of them fails to load, regardless of whether others succeeded.<br /><br />
 	 * Notice: this method should be considered and used as an asynchronous method.
 	 *
-	 * @param  {...String} ids - The unique identifier(s) of the template(s) to load.
+	 * @param  {...String} ids       - The unique identifier(s) of the template(s) to load.
+	 * @param  {Object}    [request] - Additional parameters for the AJAX request. This argument will not be accepted if there are multiple IDs to be loaded.
 	 * @return {Promise} Returns a Promise object.
 	 */
 	module.load = function () {
@@ -1965,6 +1966,8 @@ module.exports = function (cylinder, _module) {
 
 		// get the ID of the single template to fetch
 		var id = _.first(ids);
+		var data = _.last(arguments);
+		if (!_.isObject(data)) data = null;
 
 		// if the template had an error before,
 		// we will error out now!
@@ -1984,7 +1987,7 @@ module.exports = function (cylinder, _module) {
 		// attempt to fetch it from the dom,
 		// and if that fails, load it with ajax!
 		var template = module.get(id);
-		if (!_.isEmpty(template)) {
+		if (!_.isEmpty(template) && data === null) {
 			deferred.resolve(template);
 			return deferred;
 		}
@@ -2013,15 +2016,16 @@ module.exports = function (cylinder, _module) {
 			promises: [ deferred ] // deferred object so we can plug into it
 		};
 
-		job.request = $.ajax({
+		job.request = $.ajax(_.extend({}, data || {}, {
 			url: job.path,
 			cache: module.options.load_cache,
-			method: 'get',
 			dataType: 'html',
 			error: function (jxhr, text, thrown) {
-				delete load_jobs[id]; // remove the job from the hashmap...
 				var err = { jxhr: jxhr, text: text, thrown: thrown, status: jxhr.status }; // create an error variable...
-				load_errored[id] = err; // add the error to the collection...
+				if (data === null) {
+					load_errored[id] = err; // add the error to the collection...
+					delete load_jobs[id]; // remove the job from the hashmap...
+				}
 				_.each(job.promises, function (promise) { promise.reject(err); }); // reject each job promise
 			},
 			success: function (data) {
@@ -2029,9 +2033,9 @@ module.exports = function (cylinder, _module) {
 				template = module.add(id, data); // add the template to our collection...
 				_.each(job.promises, function (promise) { promise.resolve(template); }); // callback each job
 			}
-		});
+		}));
 
-		load_jobs[id] = job; // add it to the running jobs
+		if (data === null) load_jobs[id] = job; // add it to the running jobs
 		return deferred; // and return false because we don't have this template... yet!
 	};
 
